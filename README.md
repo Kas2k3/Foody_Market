@@ -12,6 +12,6 @@
 
 #### Techstack
 
-- FE: Flutter (Dart)
-- BE: NestJS
+- FE: Flutter (Dart), ReactJS (Admin role)
+- BE: NestJS, MongoDB
 - Design: Figma
