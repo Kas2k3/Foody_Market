@@ -7,14 +7,25 @@ import {
   Param,
   Delete,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { CreateAuthDto } from './dto/create-auth.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import mongoose from 'mongoose';
 
 @Controller('user')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
+
+  @Post('login')
+  createAuth(@Body() createAuthDto: CreateAuthDto) {
+    return this.usersService.signIn(
+      createAuthDto.email,
+      createAuthDto.password,
+    );
+  }
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
@@ -36,13 +47,16 @@ export class UsersController {
     return this.usersService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Patch()
+  update(@Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.update(updateUserDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  async remove(@Param('id') id: string) {
+    if (!mongoose.isValidObjectId(id)) {
+      throw new BadRequestException('Id không hợp lệ');
+    }
+    return this.usersService.remove(id);
   }
 }

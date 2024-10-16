@@ -12,6 +12,9 @@ export class CreateUserDto {
   password: string;
 
   @IsOptional()
+  username: string;
+
+  @IsOptional()
   language: string;
 
   @IsOptional()

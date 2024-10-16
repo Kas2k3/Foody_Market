@@ -221,8 +221,8 @@ export class ResponseCodeStore {
       vn: 'Thông tin người dùng đã được lấy thành công.',
     },
     '00092': {
-      en: 'Your account has been successfully deleted.',
-      vn: 'Tài khoản của bạn đã bị xóa thành công.',
+      en: 'Your account was deleted successfully.',
+      vn: 'Tài khoản của bạn đã được xóa thành công.',
     },
     '00093': {
       en: 'Cannot create a group, you are already part of one.',
