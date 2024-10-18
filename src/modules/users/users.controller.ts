@@ -10,7 +10,6 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import mongoose from 'mongoose';
@@ -18,14 +17,6 @@ import mongoose from 'mongoose';
 @Controller('user')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
-
-  @Post('login')
-  createAuth(@Body() createAuthDto: CreateAuthDto) {
-    return this.usersService.signIn(
-      createAuthDto.email,
-      createAuthDto.password,
-    );
-  }
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {

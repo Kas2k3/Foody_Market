@@ -109,8 +109,8 @@ export class ResponseCodeStore {
       vn: 'Email của bạn chưa được xác minh, vui lòng xác minh email của bạn.',
     },
     '00045': {
-      en: 'You have entered an invalid email or password.',
-      vn: 'Bạn đã nhập một email hoặc mật khẩu không hợp lệ.',
+      en: 'Incorrect Password.',
+      vn: 'Mật khẩu không chính xác.',
     },
     '00047': {
       en: 'You have logged in successfully.',
