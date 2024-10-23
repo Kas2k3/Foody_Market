@@ -6,4 +6,10 @@ export class CreateAuthDto {
 
   @IsNotEmpty({ message: 'Password cannot be blank' })
   password: string;
+
+  @IsNotEmpty({ message: 'Name cannot be blank' })
+  name: string;
+
+  @IsNotEmpty({ message: 'Username cannot be blank' })
+  username: string;
 }

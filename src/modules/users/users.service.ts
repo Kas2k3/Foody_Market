@@ -6,6 +6,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
 import app from 'api-query-params';
+import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import { v4 as uuidv4 } from 'uuid';
+import dayjs from 'dayjs';
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) { }
@@ -190,6 +193,86 @@ export class UsersService {
       },
       resultCode: '00092',
       id,
+    };
+  }
+
+  //register
+  async handleRegister(registerDto: CreateAuthDto) {
+    const { name, username, email, password } = registerDto;
+
+    //check input
+    if (name.length < 4 || name.length > 30) {
+      return {
+        resultMessage: {
+          en: 'Please provide a name longer than 3 characters and shorter than 30 characters.',
+          vn: 'Vui lòng cung cấp một tên dài hơn 3 ký tự và ngắn hơn 30 ký tự.',
+        },
+        resultCode: '00028',
+      };
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return {
+        resultMessage: {
+          en: 'Please provide a valid email address!',
+          vn: 'Vui lòng cung cấp một địa chỉ email hợp lệ!',
+        },
+        resultCode: '00026',
+      };
+    }
+    if (password.length < 7 || password.length > 20) {
+      return {
+        resultMessage: {
+          en: 'Please provide a password longer than 6 characters and shorter than 20 characters.',
+          vn: 'Vui lòng cung cấp mật khẩu dài hơn 6 ký tự và ngắn hơn 20 ký tự.',
+        },
+        resultCode: '00027',
+      };
+    }
+
+    //check exist
+    const isEmailExist = await this.isInfoExist(email);
+    if (isEmailExist) {
+      return {
+        resultMessage: {
+          en: 'An account with this email address already exists.',
+          vn: 'Một tài khoản với địa chỉ email này đã tồn tại.',
+        },
+        resultCode: '00032',
+      };
+    }
+    const isUsernameExist = await this.isInfoExist(username);
+    if (isUsernameExist) {
+      return {
+        resultMessage: {
+          en: 'An account with this username already exists.',
+          vn: 'Một tài khoản với tên người dùng này đã tồn tại.',
+        },
+        resultCode: '00032x',
+      };
+    }
+
+    //hash password
+    const hashedPassword = await hashPasswordHelper(password);
+    const user = await this.userModel.create({
+      name,
+      username,
+      email,
+      password: hashedPassword,
+      isActivated: false,
+      codeId: uuidv4(),
+      codeExpired: dayjs().add(1, 'minutes'),
+    });
+
+    return {
+      resultMessage: {
+        en: 'You have successfully registered.',
+        vn: 'Bạn đã đăng ký thành công.',
+      },
+      resultCode: '00035',
+      _id: user._id,
+      user,
+      confirmToken: 'your_confirmation_token',
     };
   }
 }

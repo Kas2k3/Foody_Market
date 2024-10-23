@@ -3,6 +3,7 @@ import { UsersService } from '@/modules/users/users.service';
 import { comparePasswordHelper } from '@/helpers/util';
 import { JwtService } from '@nestjs/jwt';
 import { ObjectId } from 'mongoose';
+import { CreateAuthDto } from './dto/create-auth.dto';
 
 export interface IUser {
   email: string;
@@ -10,6 +11,7 @@ export interface IUser {
 }
 @Injectable()
 export class AuthService {
+  authService: any;
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -33,5 +35,9 @@ export class AuthService {
       user,
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  async handleRegister(registerDto: CreateAuthDto) {
+    return await this.usersService.handleRegister(registerDto);
   }
 }

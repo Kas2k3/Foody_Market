@@ -38,8 +38,17 @@ export class User {
   @Prop({ default: '' })
   photoUrl: string;
 
+  @Prop()
+  accountType: string;
+
   @Prop({ default: false })
   isActivated: boolean;
+
+  @Prop()
+  codeId: string;
+
+  @Prop()
+  codeExpired: Date;
 
   @Prop({ default: false })
   isVerified: boolean;
