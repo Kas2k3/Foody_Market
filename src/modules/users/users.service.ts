@@ -6,12 +6,20 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
 import app from 'api-query-params';
-import { CreateAuthDto } from '@/auth/dto/create-auth.dto';
+import { CodeAuthDto, CreateAuthDto } from '@/auth/dto/create-auth.dto';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
+import { MailerService } from '@nestjs-modules/mailer';
+
+export function randomCode(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) { }
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private readonly mailerService: MailerService,
+  ) { }
 
   isInfoExist = async (info: string) => {
     const user = await this.userModel.exists({
@@ -22,68 +30,76 @@ export class UsersService {
   };
 
   async create(createUserDto: CreateUserDto) {
-    const { username, name, email, password, language, timezone, deviceId } =
-      createUserDto;
+    const {
+      username,
+      name,
+      email,
+      password,
+      type,
+      language,
+      timezone,
+      deviceId,
+    } = createUserDto;
 
     //check input
-    if (!username || !name || !email || !password) {
-      return {
+    if (!username || !name || !email || !password || !type) {
+      throw new BadRequestException({
         resultMessage: {
           en: 'Please provide all required fields!',
           vn: 'Vui lòng cung cấp tất cả các trường bắt buộc!',
         },
         resultCode: '00038',
-      };
+      });
     }
     if (name.length < 4 || name.length > 30) {
-      return {
+      throw new BadRequestException({
         resultMessage: {
           en: 'Please provide a name longer than 3 characters and shorter than 30 characters.',
           vn: 'Vui lòng cung cấp một tên dài hơn 3 ký tự và ngắn hơn 30 ký tự.',
         },
         resultCode: '00028',
-      };
+      });
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return {
+      throw new BadRequestException({
         resultMessage: {
           en: 'Please provide a valid email address!',
           vn: 'Vui lòng cung cấp một địa chỉ email hợp lệ!',
         },
         resultCode: '00026',
-      };
+      });
     }
     if (password.length < 7 || password.length > 20) {
-      return {
+      throw new BadRequestException({
         resultMessage: {
           en: 'Please provide a password longer than 6 characters and shorter than 20 characters.',
           vn: 'Vui lòng cung cấp mật khẩu dài hơn 6 ký tự và ngắn hơn 20 ký tự.',
         },
         resultCode: '00027',
-      };
+      });
     }
 
     //check exist
     const isEmailExist = await this.isInfoExist(email);
     if (isEmailExist) {
-      return {
+      throw new BadRequestException({
         resultMessage: {
           en: 'An account with this email address already exists.',
           vn: 'Một tài khoản với địa chỉ email này đã tồn tại.',
         },
         resultCode: '00032',
-      };
+      });
     }
     const isUsernameExist = await this.isInfoExist(username);
     if (isUsernameExist) {
-      return {
+      throw new BadRequestException({
         resultMessage: {
           en: 'An account with this username already exists.',
           vn: 'Một tài khoản với tên người dùng này đã tồn tại.',
         },
         resultCode: '00032x',
-      };
+      });
     }
 
     //hash password
@@ -93,6 +109,7 @@ export class UsersService {
       email,
       username,
       password: hashedPassword,
+      type,
       language,
       timezone,
       deviceId,
@@ -150,27 +167,27 @@ export class UsersService {
     });
   }
 
-  //update name
+  //update
   async update(updateUserDto: UpdateUserDto) {
-    const { _id, name } = updateUserDto;
+    const { _id, email, name, username, type } = updateUserDto;
     //check input
-    if (!name || !_id) {
-      return {
+    if (!email || !name || !_id || !username || !type) {
+      throw new BadRequestException({
         resultMessage: {
           en: 'Please provide all required fields!',
           vn: 'Vui lòng cung cấp tất cả các trường bắt buộc!',
         },
         resultCode: '00038',
-      };
+      });
     }
     if (name.length < 4 || name.length > 30) {
-      return {
+      throw new BadRequestException({
         resultMessage: {
           en: 'Please provide a name longer than 3 characters and shorter than 30 characters.',
           vn: 'Vui lòng cung cấp một tên dài hơn 3 ký tự và ngắn hơn 30 ký tự.',
         },
         resultCode: '00028',
-      };
+      });
     }
 
     return await this.userModel.updateOne(
@@ -254,14 +271,26 @@ export class UsersService {
 
     //hash password
     const hashedPassword = await hashPasswordHelper(password);
+    const codeId = randomCode();
     const user = await this.userModel.create({
       name,
       username,
       email,
       password: hashedPassword,
       isActivated: false,
-      codeId: uuidv4(),
-      codeExpired: dayjs().add(1, 'minutes'),
+      codeId: codeId,
+      codeExpired: dayjs().add(5, 'minutes'),
+    });
+
+    //send email
+    this.mailerService.sendMail({
+      to: user.email,
+      subject: 'Activation your account for FoodyMart',
+      template: 'register.hbs',
+      context: {
+        name: user?.name ?? user.username,
+        activationCode: codeId,
+      },
     });
 
     return {
@@ -273,6 +302,100 @@ export class UsersService {
       _id: user._id,
       user,
       confirmToken: 'your_confirmation_token',
+    };
+  }
+
+  //activate
+  async handleActive(data: CodeAuthDto) {
+    const user = await this.userModel.findOne({
+      _id: data._id,
+      codeId: data.code,
+    });
+    if (!user) {
+      throw new BadRequestException({
+        resultMessage: {
+          en: 'The code you entered does not match the code we sent to your email. Please check again.',
+          vn: 'Mã bạn nhập không khớp với mã chúng tôi đã gửi đến email của bạn. Vui lòng kiểm tra lại.',
+        },
+        resultCode: '00054',
+      });
+    }
+
+    // check expire code
+    const isBeforeCheck = dayjs().isBefore(user.codeExpired);
+    if (isBeforeCheck) {
+      await this.userModel.updateOne(
+        { _id: data._id },
+        {
+          isActivated: true,
+        },
+      );
+      return {
+        resultMessage: {
+          en: 'Your email address has been successfully verified.',
+          vn: 'Địa chỉ email của bạn đã được xác minh thành công.',
+        },
+        resultCode: '00058',
+      };
+    } else {
+      throw new BadRequestException({
+        resultMessage: {
+          en: 'The code you entered does not match the code we sent to your email or has expired. Please check again.',
+          vn: 'Mã bạn nhập không khớp với mã chúng tôi đã gửi đến email của bạn hoặc đã bị hết hạn. Vui lòng kiểm tra lại.',
+        },
+        resultCode: '00054x',
+      });
+    }
+  }
+
+  //resend activate
+  async resendActive(email: string) {
+    //check email
+    const user = await this.userModel.findOne({ email })
+
+    if (!user) {
+      throw new BadRequestException({
+        resultMessage: {
+          en: 'Cannot find the user.',
+          vn: 'Không thể tìm thấy người dùng.',
+        },
+        resultCode: '00052',
+      });
+    }
+    if (user.isActivated) {
+      throw new BadRequestException({
+        resultMessage: {
+          en: 'Your email address has been previously verified.',
+          vn: 'Địa chỉ email của bạn đã được xác minh trước đó.',
+        },
+        resultCode: '00058x',
+      });
+    }
+
+    //update user
+    const codeId = randomCode();
+    await user.updateOne({
+      codeId: codeId,
+      codeExpired: dayjs().add(5, 'minutes'),
+    });
+
+    //send email
+    this.mailerService.sendMail({
+      to: user.email,
+      subject: 'Activation your account for FoodyMart',
+      template: 'register.hbs',
+      context: {
+        name: user?.name ?? user.username,
+        activationCode: codeId,
+      },
+    });
+
+    return {
+      resultMessage: {
+        en: 'The code has been successfully sent to your email.',
+        vn: 'Mã đã được gửi đến email của bạn thành công.',
+      },
+      resultCode: '00048',
     };
   }
 }

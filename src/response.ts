@@ -136,6 +136,10 @@ export class ResponseCodeStore {
       en: 'The code you entered does not match the code we sent to your email. Please check again.',
       vn: 'Mã bạn nhập không khớp với mã chúng tôi đã gửi đến email của bạn. Vui lòng kiểm tra lại.',
     },
+    '00054x': {
+      en: 'The code you entered has expired. Please resend a new code.',
+      vn: 'Mã bạn nhập đã hết hạn. Vui lòng gửi lại mã mới.',
+    },
     '00055': {
       en: 'Invalid token. The token may have expired.',
       vn: 'Token không hợp lệ. Token có thể đã hết hạn.',
@@ -143,6 +147,10 @@ export class ResponseCodeStore {
     '00058': {
       en: 'Your email address has been successfully verified.',
       vn: 'Địa chỉ email của bạn đã được xác minh thành công.',
+    },
+    '00058x': {
+      en: 'Your email address has been previously verified.',
+      vn: 'Địa chỉ email của bạn đã được xác minh trước đó.',
     },
     '00059': {
       en: 'Please provide a refresh token.',

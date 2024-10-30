@@ -13,3 +13,11 @@ export class CreateAuthDto {
   @IsNotEmpty({ message: 'Username cannot be blank' })
   username: string;
 }
+
+export class CodeAuthDto {
+  @IsNotEmpty({ message: 'Id cannot be blank' })
+  _id: string;
+
+  @IsNotEmpty({ message: 'Code cannot be blank' })
+  code: string;
+}

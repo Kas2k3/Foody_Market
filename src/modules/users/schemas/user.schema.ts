@@ -17,13 +17,13 @@ export class User {
   @Prop()
   name: string;
 
-  @Prop({ default: 'user' })
+  @Prop({ type: String, enum: ['USER', 'ADMIN', null], default: null })
   type: string;
 
   @Prop({ default: 'en' })
   language: string;
 
-  @Prop({ type: String, enum: ['male', 'female', null], default: null })
+  @Prop({ type: String, enum: ['MALE', 'FEMALE', null], default: null })
   gender: string | null;
 
   @Prop({ default: 'US' })

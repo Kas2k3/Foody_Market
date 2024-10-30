@@ -13,12 +13,14 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import mongoose from 'mongoose';
+import { Public } from '@/decorator/customize';
 
 @Controller('user')
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
   @Post()
+  @Public()
   async create(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.create(createUserDto);
     return user;

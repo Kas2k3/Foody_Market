@@ -1,13 +1,19 @@
-import { IsMongoId, IsNotEmpty, IsOptional } from 'class-validator';
+import { IsMongoId, IsNotEmpty } from 'class-validator';
 
 export class UpdateUserDto {
   @IsMongoId({ message: 'Invalid Id' })
   @IsNotEmpty({ message: 'Id cannot be blank' })
   _id: string;
 
-  @IsOptional()
+  @IsNotEmpty({ message: 'Name cannot be blank' })
   name: string;
 
-  @IsOptional()
-  language: string;
+  @IsNotEmpty({ message: 'Email cannot be blank' })
+  email: string;
+
+  @IsNotEmpty({ message: 'Username cannot be blank' })
+  username: string;
+
+  @IsNotEmpty({ message: 'Role cannot be blank' })
+  type: string;
 }

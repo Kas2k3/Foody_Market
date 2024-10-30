@@ -42,6 +42,15 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         resultCode: '00045',
       });
     }
+    if (user.isActivated == false) {
+      throw new BadRequestException({
+        resultMessage: {
+          en: 'Your email has not been verified, please verify your email.',
+          vn: 'Email của bạn chưa được xác minh, vui lòng xác minh email của bạn.',
+        },
+        resultCode: '00044',
+      });
+    }
     return user;
   }
 }

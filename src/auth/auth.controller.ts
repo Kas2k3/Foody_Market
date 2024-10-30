@@ -1,13 +1,24 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 import { JwtAuthGuard } from './passport/jwt-auth.guard';
 import { Public } from '@/decorator/customize';
-import { CreateAuthDto } from './dto/create-auth.dto';
+import { CodeAuthDto, CreateAuthDto } from './dto/create-auth.dto';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(
+    private readonly authService: AuthService,
+    private readonly mailerService: MailerService,
+  ) { }
 
   @Public()
   @UseGuards(LocalAuthGuard)
@@ -27,5 +38,39 @@ export class AuthController {
   @Public()
   register(@Body() registerDto: CreateAuthDto) {
     return this.authService.handleRegister(registerDto);
+  }
+
+  @Post('verify-email')
+  @Public()
+  verifyEmail(@Body() codeAuthDto: CodeAuthDto) {
+    return this.authService.verifyEmail(codeAuthDto);
+  }
+
+  @Post('resend-verification-code')
+  @Public()
+  resendEmail(@Body('email') email: string) {
+    return this.authService.resendEmail(email);
+  }
+
+  @Get('send-verification-code')
+  @Public()
+  sendEmail() {
+    this.mailerService.sendMail({
+      to: 'kas@gmail.com',
+      subject: 'FoodyMart Activation',
+      template: 'register.hbs',
+      context: {
+        name: 'Kas',
+        activationCode: 123456,
+      },
+    });
+
+    return {
+      resultMessage: {
+        en: 'The code has been successfully sent to your email.',
+        vn: 'Mã đã được gửi đến email của bạn thành công.',
+      },
+      resultCode: '00048',
+    };
   }
 }

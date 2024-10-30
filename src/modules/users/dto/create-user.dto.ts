@@ -11,6 +11,9 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'Password cannot be blank' })
   password: string;
 
+  @IsNotEmpty({ message: 'Role cannot be blank' })
+  type: string;
+
   @IsOptional()
   username: string;
 
