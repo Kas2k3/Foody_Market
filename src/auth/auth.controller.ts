@@ -10,7 +10,11 @@ import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './passport/local-auth.guard';
 import { JwtAuthGuard } from './passport/jwt-auth.guard';
 import { Public } from '@/decorator/customize';
-import { CodeAuthDto, CreateAuthDto } from './dto/create-auth.dto';
+import {
+  ChangePasswordAuthDto,
+  CodeAuthDto,
+  CreateAuthDto,
+} from './dto/create-auth.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 
 @Controller('auth')
@@ -52,13 +56,25 @@ export class AuthController {
     return this.authService.resendEmail(email);
   }
 
+  @Post('forgot-password')
+  @Public()
+  forgotPassword(@Body('email') email: string) {
+    return this.authService.forgotPassword(email);
+  }
+
+  @Post('change-forgot-password')
+  @Public()
+  changePassword(@Body() data: ChangePasswordAuthDto) {
+    return this.authService.changePassword(data);
+  }
+
   @Get('send-verification-code')
   @Public()
   sendEmail() {
     this.mailerService.sendMail({
       to: 'kas@gmail.com',
       subject: 'FoodyMart Activation',
-      template: 'register.hbs',
+      template: 'verify.hbs',
       context: {
         name: 'Kas',
         activationCode: 123456,

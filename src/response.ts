@@ -188,6 +188,10 @@ export class ResponseCodeStore {
       en: 'Your old password does not match the password you entered, please enter the correct password.',
       vn: 'Mật khẩu cũ của bạn không khớp với mật khẩu bạn nhập, vui lòng nhập mật khẩu đúng.',
     },
+    '00072x': {
+      en: 'Please enter the new password and confirm the new password is the same.',
+      vn: 'Vui lòng nhập mật khẩu mới và xác nhận mật khẩu mới giống nhau.',
+    },
     '00073': {
       en: 'Your new password should not be the same as the old password, please try a different password.',
       vn: 'Mật khẩu mới của bạn không nên giống với mật khẩu cũ, vui lòng thử một mật khẩu khác.',

@@ -3,7 +3,7 @@ import { UsersService } from '@/modules/users/users.service';
 import { comparePasswordHelper } from '@/helpers/util';
 import { JwtService } from '@nestjs/jwt';
 import { ObjectId } from 'mongoose';
-import { CodeAuthDto, CreateAuthDto } from './dto/create-auth.dto';
+import { ChangePasswordAuthDto, CodeAuthDto, CreateAuthDto } from './dto/create-auth.dto';
 
 export interface IUser {
   email: string;
@@ -49,5 +49,13 @@ export class AuthService {
 
   async resendEmail(data: string) {
     return await this.usersService.resendActive(data);
+  }
+
+  async forgotPassword(data: string) {
+    return await this.usersService.forgotPassword(data);
+  }
+
+  async changePassword(data: ChangePasswordAuthDto) {
+    return await this.usersService.changePassword(data);
   }
 }

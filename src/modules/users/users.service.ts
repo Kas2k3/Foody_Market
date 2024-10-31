@@ -6,8 +6,11 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
 import app from 'api-query-params';
-import { CodeAuthDto, CreateAuthDto } from '@/auth/dto/create-auth.dto';
-import { v4 as uuidv4 } from 'uuid';
+import {
+  ChangePasswordAuthDto,
+  CodeAuthDto,
+  CreateAuthDto,
+} from '@/auth/dto/create-auth.dto';
 import dayjs from 'dayjs';
 import { MailerService } from '@nestjs-modules/mailer';
 
@@ -286,7 +289,7 @@ export class UsersService {
     this.mailerService.sendMail({
       to: user.email,
       subject: 'Activation your account for FoodyMart',
-      template: 'register.hbs',
+      template: 'verify.hbs',
       context: {
         name: user?.name ?? user.username,
         activationCode: codeId,
@@ -351,7 +354,7 @@ export class UsersService {
   //resend activate
   async resendActive(email: string) {
     //check email
-    const user = await this.userModel.findOne({ email })
+    const user = await this.userModel.findOne({ email });
 
     if (!user) {
       throw new BadRequestException({
@@ -397,5 +400,106 @@ export class UsersService {
       },
       resultCode: '00048',
     };
+  }
+
+  //forgot password
+  async forgotPassword(email: string) {
+    //check email
+    const user = await this.userModel.findOne({ email });
+
+    if (!user) {
+      throw new BadRequestException({
+        resultMessage: {
+          en: 'Cannot find the user.',
+          vn: 'Không thể tìm thấy người dùng.',
+        },
+        resultCode: '00052',
+      });
+    }
+
+    //update user
+    const codeId = randomCode();
+    await user.updateOne({
+      codeId: codeId,
+      codeExpired: dayjs().add(5, 'minutes'),
+    });
+
+    //send code
+    this.mailerService.sendMail({
+      to: user.email,
+      subject: 'Change password for FoodyMart Account',
+      template: 'verify.hbs',
+      context: {
+        name: user?.name ?? user.username,
+        activationCode: codeId,
+      },
+    });
+
+    return {
+      resultMessage: {
+        en: 'The code has been successfully sent to your email.',
+        vn: 'Mã đã được gửi đến email của bạn thành công.',
+      },
+      resultCode: '00048',
+    };
+  }
+
+  //change forgot password
+  async changePassword(data: ChangePasswordAuthDto) {
+    if (data.confirmPassword !== data.password) {
+      throw new BadRequestException({
+        resultMessage: {
+          en: 'Please enter the new password and confirm the new password is the same.',
+          vn: 'Vui lòng nhập mật khẩu mới và xác nhận mật khẩu mới giống nhau.',
+        },
+        resultCode: '00072x',
+      });
+    }
+
+    //check email
+    const user = await this.userModel.findOne({ email: data.email });
+
+    if (!user) {
+      throw new BadRequestException({
+        resultMessage: {
+          en: 'Cannot find the user.',
+          vn: 'Không thể tìm thấy người dùng.',
+        },
+        resultCode: '00052',
+      });
+    }
+
+    //check password
+    if (data.password.length < 7 || data.password.length > 20) {
+      throw new BadRequestException({
+        resultMessage: {
+          en: 'Please provide a password longer than 6 characters and shorter than 20 characters.',
+          vn: 'Vui lòng cung cấp mật khẩu dài hơn 6 ký tự và ngắn hơn 20 ký tự.',
+        },
+        resultCode: '00027',
+      });
+    }
+
+    // check expire code
+    const isBeforeCheck = dayjs().isBefore(user.codeExpired);
+    if (isBeforeCheck) {
+      const newPassword = await hashPasswordHelper(data.password);
+      await user.updateOne({ password: newPassword });
+      return {
+        resultMessage: {
+          en: 'Your password has been successfully changed.',
+          vn: 'Mật khẩu của bạn đã được thay đổi thành công.',
+        },
+        resultCode: '00076',
+      };
+    } else {
+      throw new BadRequestException({
+        resultMessage: {
+          en: 'The code you entered does not match the code we sent to your email or has expired. Please check again.',
+          vn: 'Mã bạn nhập không khớp với mã chúng tôi đã gửi đến email của bạn hoặc đã bị hết hạn. Vui lòng kiểm tra lại.',
+        },
+        resultCode: '00054x',
+      });
+    }
   }
 }

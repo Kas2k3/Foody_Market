@@ -21,3 +21,17 @@ export class CodeAuthDto {
   @IsNotEmpty({ message: 'Code cannot be blank' })
   code: string;
 }
+
+export class ChangePasswordAuthDto {
+  @IsNotEmpty({ message: 'Email cannot be blank' })
+  email: string;
+
+  @IsNotEmpty({ message: 'Code cannot be blank' })
+  code: string;
+
+  @IsNotEmpty({ message: 'Password cannot be blank' })
+  password: string;
+
+  @IsNotEmpty({ message: 'Confirm password cannot be blank' })
+  confirmPassword: string;
+}
