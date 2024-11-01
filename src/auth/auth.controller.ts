@@ -16,12 +16,14 @@ import {
   CreateAuthDto,
 } from './dto/create-auth.dto';
 import { MailerService } from '@nestjs-modules/mailer';
+import { ConfigService } from '@nestjs/config';
 
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly mailerService: MailerService,
+    private readonly configService: ConfigService
   ) { }
 
   @Public()
@@ -30,6 +32,12 @@ export class AuthController {
   async login(@Request() req) {
     return this.authService.login(req.user);
     // return req.user;
+  }
+
+  @Post('refresh-token')
+  @Public()
+  async refreshToken(@Body('refreshToken') refreshToken: string) {
+    return this.authService.refreshToken(refreshToken);
   }
 
   // @UseGuards(JwtAuthGuard)

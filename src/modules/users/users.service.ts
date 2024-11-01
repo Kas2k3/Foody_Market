@@ -3,7 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { hashPasswordHelper } from '@/helpers/util';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { User } from './schemas/user.schema';
 import app from 'api-query-params';
 import {
@@ -168,6 +168,16 @@ export class UsersService {
     return await this.userModel.findOne({
       $or: [{ email: info }, { username: info }],
     });
+  }
+
+  //find by id
+  async findById(userId: ObjectId) {
+    return this.userModel.findById(userId);
+  }
+
+  //save refresh token
+  async saveRefreshToken(userId: ObjectId, refreshToken: string) {
+    await this.userModel.updateOne({ _id: userId }, { refreshToken });
   }
 
   //update
