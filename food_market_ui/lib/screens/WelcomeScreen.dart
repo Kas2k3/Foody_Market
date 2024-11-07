@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:food_market_ui/screens/HomeScreen.dart';
+import 'package:food_market_ui/screens/RootScreen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -30,7 +30,7 @@ class WelcomeScreen extends StatelessWidget {
                         // Điều hướng đến màn hình Home khi người dùng nhấn nút
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => HomeScreen()),
+                          MaterialPageRoute(builder: (context) => const RootScreen()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
