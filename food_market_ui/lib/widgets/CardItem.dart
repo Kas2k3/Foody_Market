@@ -27,6 +27,7 @@ class CardItem extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 5),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
          children: [
             Image.asset(
               imagePath,
