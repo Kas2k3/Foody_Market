@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:food_market_ui/widgets/CardItem.dart';
+import 'package:food_market_ui/widgets/cart_item.dart';
 
 class HorizontalCardList extends StatelessWidget {
   final String title; // Tiêu đề của phần danh sách

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:food_market_ui/widgets/CardList.dart';
-import '../widgets/CardItem.dart';
+import 'package:food_market_ui/widgets/list_cart.dart';
+import '../widgets/cart_item.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,7 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Center(
             child: HorizontalCardList(
               title: 'Thực phẩm gần đây',
-              cardItems: const [
+              cardItems: [
                 CardItem(imagePath: 'assets/images/fried_eggs.png', titleName: 'Trứng chiên nước mắm'),
                 CardItem(imagePath: 'assets/images/fried_eggs.png', titleName: 'Trứng chiên nước mắm'),
                 CardItem(imagePath: 'assets/images/fried_eggs.png', titleName: 'Trứng chiên nước mắm'),
@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Center(
             child: HorizontalCardList(
               title: 'Hôm nay ăn gì?',
-              cardItems: const [
+              cardItems: [
                 CardItem(imagePath: 'assets/images/meat.png', titleName: 'Cơm tấm/Cơm sườn'),
                 CardItem(imagePath: 'assets/images/meat.png', titleName: 'Cơm tấm/Cơm sườn'),
                 CardItem(imagePath: 'assets/images/meat.png', titleName: 'Cơm tấm/Cơm sườn'),
@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Center(
             child: HorizontalCardList(
               title: 'Công thức nấu ăn',
-              cardItems: const [
+              cardItems:  [
                 CardItem(imagePath: 'assets/images/onion.png', titleName: 'Lòng xào gà mướp'),
                 CardItem(imagePath: 'assets/images/onion.png', titleName: 'Lòng xào gà mướp'),
                 CardItem(imagePath: 'assets/images/onion.png', titleName: 'Lòng xào gà mướp'),
@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Center(
             child: HorizontalCardList(
               title: 'Công thức nấu ăn',
-              cardItems: const [
+              cardItems: [
                 CardItem(imagePath: 'assets/images/onion.png', titleName: 'Lòng xào gà mướp'),
                 CardItem(imagePath: 'assets/images/onion.png', titleName: 'Lòng xào gà mướp'),
                 CardItem(imagePath: 'assets/images/onion.png', titleName: 'Lòng xào gà mướp'),

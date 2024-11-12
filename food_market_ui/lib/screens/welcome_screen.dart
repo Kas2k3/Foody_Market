@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:food_market_ui/screens/RootScreen.dart';
+import 'package:food_market_ui/screens/root_screen.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
