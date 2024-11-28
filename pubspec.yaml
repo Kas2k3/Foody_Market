@@ -1,0 +1,183 @@
+name: foody_mart_prj
+description: "A new Flutter project."
+# The following line prevents the package from being accidentally published to
+# pub.dev using `flutter pub publish`. This is preferred for private packages.
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+
+# The following defines the version and build number for your application.
+# A version number is three numbers separated by dots, like 1.2.43
+# followed by an optional build number separated by a +.
+# Both the version and the builder number may be overridden in flutter
+# build by specifying --build-name and --build-number, respectively.
+# In Android, build-name is used as versionName while build-number used as versionCode.
+# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
+# In iOS, build-name is used as CFBundleShortVersionString while build-number is used as CFBundleVersion.
+# Read more about iOS versioning at
+# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
+# In Windows, build-name is used as the major, minor, and patch parts
+# of the product and file versions while build-number is used as the build suffix.
+version: 1.0.0+26
+
+environment:
+  sdk: ">=3.2.5 <4.0.0"
+
+# Dependencies specify other packages that your package needs in order to work.
+# To automatically upgrade your package dependencies to the latest versions
+# consider running `flutter pub upgrade --major-versions`. Alternatively,
+# dependencies can be manually updated by changing the version numbers below to
+# the latest version available on pub.dev. To see which dependencies have newer
+# versions available, run `flutter pub outdated`.
+dependencies:
+  flutter:
+    sdk: flutter
+
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.19.0
+  just_audio:
+    git:
+      url: https://github.com/cristian1980/just_audio
+      ref: minor
+      path: just_audio
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.2
+  font_awesome_flutter: ^10.7.0
+  http: ^0.13.3
+  flutter_bloc: ^8.1.4
+  get_it: ^7.2.0
+  equatable: ^2.0.3
+  json_annotation: ^4.9.0
+  hive: ^2.2.1
+  hive_flutter: ^1.1.0
+  purchases_flutter: ^6.0.0
+  flutter_local_notifications: ^17.0.0
+  smooth_page_indicator: ^1.2.0+3
+
+  # Http Client
+  dio: ^5.2.1
+
+  google_fonts: ^4.0.4
+  firebase_auth: ^4.16.0
+  google_sign_in: ^6.2.1
+
+  path_provider: ^2.1.2
+  firebase_crashlytics: ^3.5.2
+
+  # to rating start
+  in_app_review: ^2.0.9
+
+  sign_in_with_apple: ^6.1.0
+  crypto: ^3.0.3
+  # Svg Loader
+  flutter_svg: ^2.0.7
+  fluttertoast: ^8.2.4
+  app_tracking_transparency: ^2.0.6
+  lottie: ^3.0.0
+  firebase_analytics: ^10.10.5
+  firebase_messaging: ^14.7.21
+  # Local Persist
+  shared_preferences:
+  share_plus: ^9.0.0
+  #webview
+  webview_flutter: ^4.7.0
+  freezed: 2.4.6
+  freezed_annotation: 2.4.1
+  firebase_core: ^2.27.2
+  firebase_app_installations: ^0.2.5+7
+  device_info_plus: ^10.1.0
+  collection: ^1.18.0
+  # Auto resize
+  flutter_screenutil: ^5.9.0
+  firebase_remote_config: ^4.4.7
+  flutter_intl:
+  scrollable_positioned_list: ^0.3.8
+  #string format
+  sprintf:
+  flutter_markdown: ^0.7.3+1
+  file_picker: ^8.0.5
+  url_launcher: ^6.3.0
+  dotted_decoration: ^2.0.0
+  flip_card: ^0.7.0
+  flutter_card_swiper: ^7.0.1
+  card_swiper: ^3.0.1
+  youtube_player_iframe: ^4.0.4
+  package_info: ^2.0.0
+  youtube_explode_dart: ^1.12.4
+  permission_handler: ^11.3.1
+  pull_down_button: ^0.10.1
+  pdf: ^3.11.1
+  app_links: ^6.3.2
+  modal_bottom_sheet: ^3.0.0
+  uuid: ^4.5.1
+  pretty_dio_logger: ^1.4.0
+  firebase_in_app_messaging: ^0.7.5+7
+  record: ^5.1.2
+  audio_session: ^0.1.21
+  el_tooltip: ^2.2.1
+  flutter_background_service: ^5.0.10
+  custom_refresh_indicator: ^4.0.1
+  table_calendar: ^3.1.2
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # The "flutter_lints" package below contains a set of recommended lints to
+  # encourage good coding practices. The lint set provided by the package is
+  # activated in the `analysis_options.yaml` file located at the root of your
+  # package. See that file for information about deactivating specific lint
+  # rules and activating additional ones.
+  flutter_lints: ^2.0.0
+  json_serializable: ^6.7.1
+  build_runner:
+  flutter_gen_runner:
+  analyzer: ^6.0.0
+  hive_generator: ^2.0.1
+  change_app_package_name: ^1.1.0
+
+  flutter_launcher_icons: ^0.13.1
+  mockito: ^5.4.0
+  rename_app: ^1.3.2
+  # Paging
+  infinite_scroll_pagination:
+  #gradien boder
+  gradient_borders: ^1.0.0
+  video_player: ^2.8.6
+  facebook_app_events: ^0.19.3
+  connectivity_plus: ^6.0.2
+
+# Config icon application
+flutter_launcher_icons:
+  android: false
+  ios: false
+  remove_alpha_ios: true
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:
+  generate: true
+  uses-material-design: true
+
+  assets:
+    - assets/icons/
+    - assets/images/
+    - assets/videos/
+
+  fonts:
+    - family: SF-Pro
+      fonts:
+        - asset: assets/fonts/sf-pro/SFPRODISPLAYBOLD.otf
+        - asset: assets/fonts/sf-pro/SFPRODISPLAYLIGHT.otf
+        - asset: assets/fonts/sf-pro/SFPRODISPLAYMEDIUM.otf
+        - asset: assets/fonts/sf-pro/SFPRODISPLAYREGULAR.otf
+        - asset: assets/fonts/sf-pro/SFPRODISPLAYSEMIBOLD.otf
+        - asset: assets/fonts/sf-pro/SFPRODISPLAYEXTRALIGHT.otf
+
+flutter_intl:
+  enabled: true
+  arb-dir: l10n
+  template-arb-file: intl_en.arb
+  output-localization-file: app_localizations.dart
