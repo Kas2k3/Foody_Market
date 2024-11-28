@@ -1,13 +1,33 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { Document } from 'mongoose';
+
+export enum CategoryEnum {
+  MEAT = 'Meat',
+  VEGETABLE = 'Vegetable',
+  TUBER = 'Tuber',
+  FRUIT = 'Fruit',
+  DAIRY = 'Dairy',
+  SPICE = 'Spice',
+  OTHER = 'Other',
+}
+
+export enum UnitEnum {
+  KILOGRAM = 'Kilogram',
+  GRAM = 'Gram',
+  PACKAGE = 'Package',
+  TEASPOON = 'Teaspoon',
+  ROOT = 'Root',
+  FRUIT_MEASURE = 'Fruit',
+  BUNCH = 'Bunch',
+  SLICE = 'Slice',
+  LEAF = 'Leaf',
+  OTHER_UNIT = 'Other',
+}
 
 export type FoodDocument = Food & Document;
 
 @Schema({ timestamps: true })
 export class Food {
-  @Prop({ required: true })
-  id: string;
-
   @Prop({ required: true })
   name: string;
 
@@ -17,14 +37,11 @@ export class Food {
   @Prop()
   type: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'FoodCategory' })
-  foodCategoryId: Types.ObjectId;
+  @Prop({ required: true, enum: CategoryEnum })
+  category: CategoryEnum;
 
-  @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  userId: Types.ObjectId;
-
-  @Prop({ type: Types.ObjectId, ref: 'UnitOfMeasurement' })
-  unitOfMeasurementId: Types.ObjectId;
+  @Prop({ required: true, enum: UnitEnum })
+  unit: UnitEnum;
 }
 
 export const FoodSchema = SchemaFactory.createForClass(Food);
