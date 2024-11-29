@@ -10,11 +10,12 @@ export class FoodService {
   constructor(@InjectModel(Food.name) private foodModel: Model<FoodDocument>) { }
 
   async create(createFoodDto: CreateFoodDto, userId: string) {
-    const { name, category, unit, imageUrl } = createFoodDto;
+    const { name, category, quantity, unit, imageUrl } = createFoodDto;
 
     const food = new this.foodModel({
       name,
       unit,
+      quantity,
       category,
       imageUrl,
     });
@@ -34,7 +35,7 @@ export class FoodService {
   }
 
   async updateFood(updateFoodDto: UpdateFoodDto): Promise<any> {
-    const { id, name, category, unit, imageUrl } = updateFoodDto;
+    const { id, name, category, quantity, unit, imageUrl } = updateFoodDto;
 
     const updatedFood = await this.foodModel.findByIdAndUpdate(
       id,
@@ -42,6 +43,7 @@ export class FoodService {
         name,
         category,
         unit,
+        quantity,
         imageUrl,
       },
       { new: true },
