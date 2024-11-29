@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Food, FoodDocument } from './schemas/food.schema';
@@ -12,15 +12,10 @@ export class FoodService {
     @InjectModel(Food.name) private readonly foodModel: Model<FoodDocument>,
   ) { }
 
-  async create(createFoodDto: CreateFoodDto, userId: string) {
-    const { name, category, quantity, unit, imageUrl } = createFoodDto;
-
+  async createFood(createFoodDto: CreateFoodDto, userIdCreate: string) {
     const food = new this.foodModel({
-      name,
-      unit,
-      quantity,
-      category,
-      imageUrl,
+      ...createFoodDto,
+      userIdCreate,
     });
 
     await food.save();
@@ -32,37 +27,28 @@ export class FoodService {
       },
       resultCode: '00160',
       food,
-      user: userId,
       confirmToken: 'your_confirmation_token',
     };
   }
 
-  async updateFood(updateFoodDto: UpdateFoodDto): Promise<any> {
-    const { id, name, category, quantity, unit, imageUrl } = updateFoodDto;
-
+  async updateFood(updateFoodDto: UpdateFoodDto) {
     const updatedFood = await this.foodModel.findByIdAndUpdate(
-      id,
-      {
-        name,
-        category,
-        unit,
-        quantity,
-        imageUrl,
-      },
+      updateFoodDto.id,
+      { ...updateFoodDto },
       { new: true },
     );
 
     return {
       resultMessage: {
-        en: 'Successfully',
-        vn: 'Thành công',
+        en: 'Food updated successfully',
+        vn: 'Cập nhật thực phẩm thành công',
       },
-      resultCode: '00178',
+      resultCode: '00101',
       food: updatedFood,
     };
   }
 
-  async remove(id: string): Promise<any> {
+  async removeFood(id: string): Promise<any> {
     await this.foodModel.findByIdAndDelete(id);
     return {
       resultMessage: {

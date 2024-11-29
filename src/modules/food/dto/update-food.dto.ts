@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   IsNumberString,
   IsOptional,
+  IsString,
 } from 'class-validator';
 import { CategoryEnum, UnitEnum } from '../schemas/food.schema';
 
@@ -29,4 +30,8 @@ export class UpdateFoodDto {
   @IsNotEmpty()
   @IsEnum(UnitEnum, { message: 'Invalid unit value' })
   unit: UnitEnum;
+
+  @IsOptional()
+  @IsString()
+  userIdCreate?: string;
 }

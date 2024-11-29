@@ -45,6 +45,9 @@ export class Food {
 
   @Prop({ required: true, enum: UnitEnum })
   unit: UnitEnum;
+
+  @Prop({ required: true })
+  userIdCreate: string;
 }
 
 export const FoodSchema = SchemaFactory.createForClass(Food);

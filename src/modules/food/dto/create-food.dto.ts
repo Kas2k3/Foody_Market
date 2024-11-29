@@ -31,4 +31,8 @@ export class CreateFoodDto {
   @IsNotEmpty()
   @IsEnum(UnitEnum, { message: 'Invalid unit value' })
   unit: UnitEnum;
+
+  @IsOptional()
+  @IsString()
+  userIdCreate?: string;
 }

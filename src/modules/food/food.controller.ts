@@ -10,6 +10,7 @@ import {
   Put,
   Get,
   Query,
+  ForbiddenException,
 } from '@nestjs/common';
 import { FoodService } from './food.service';
 import { CreateFoodDto } from './dto/create-food.dto';
@@ -33,22 +34,31 @@ export class FoodController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  async create(@Body() createFoodDto: CreateFoodDto, @Req() request: any) {
-    const userId = request.user._id;
-    return await this.foodService.create(createFoodDto, userId);
+  async createFood(@Body() createFoodDto: CreateFoodDto, @Req() request: any) {
+    const userIdCreate = request.user._id;
+    return await this.foodService.createFood(createFoodDto, userIdCreate);
   }
 
-  @Put(':id')
+  @Put()
   @UseGuards(JwtAuthGuard)
-  async updateFood(@Body() updateFoodDto: UpdateFoodDto) {
+  async updateFood(
+    @Param('id') id: string,
+    @Body() updateFoodDto: UpdateFoodDto,
+    @Req() request: any,
+  ) {
+    if (request.user._id !== updateFoodDto.userIdCreate) {
+      throw new ForbiddenException(
+        'You are not authorized to update this food',
+      );
+    }
     return this.foodService.updateFood(updateFoodDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async removeFood(@Param('id') id: string) {
     if (!mongoose.isValidObjectId(id)) {
       throw new BadRequestException('Id không hợp lệ');
     }
-    return this.foodService.remove(id);
+    return this.foodService.removeFood(id);
   }
 }
