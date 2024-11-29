@@ -8,6 +8,8 @@ import {
   UseGuards,
   Req,
   Put,
+  Get,
+  Query,
 } from '@nestjs/common';
 import { FoodService } from './food.service';
 import { CreateFoodDto } from './dto/create-food.dto';
@@ -18,6 +20,16 @@ import { JwtAuthGuard } from '@/auth/passport/jwt-auth.guard';
 @Controller('food')
 export class FoodController {
   constructor(private readonly foodService: FoodService) { }
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async findAll(
+    @Query() query: string,
+    @Query('current') current: string,
+    @Query('pageSize') pageSize: string,
+  ) {
+    return this.foodService.findAllFood(query, +current, +pageSize);
+  }
 
   @Post()
   @UseGuards(JwtAuthGuard)

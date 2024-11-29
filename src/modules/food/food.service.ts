@@ -4,10 +4,13 @@ import { Model } from 'mongoose';
 import { Food, FoodDocument } from './schemas/food.schema';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { UpdateFoodDto } from './dto/update-food.dto';
+import app from 'api-query-params';
 
 @Injectable()
 export class FoodService {
-  constructor(@InjectModel(Food.name) private foodModel: Model<FoodDocument>) { }
+  constructor(
+    @InjectModel(Food.name) private readonly foodModel: Model<FoodDocument>,
+  ) { }
 
   async create(createFoodDto: CreateFoodDto, userId: string) {
     const { name, category, quantity, unit, imageUrl } = createFoodDto;
@@ -67,6 +70,38 @@ export class FoodService {
         vn: 'Xóa thực phẩm thành công',
       },
       resultCode: '00184',
+    };
+  }
+
+  async findAllFood(query: string, current: number, pageSize: number) {
+    const { filter, sort } = app(query);
+
+    if (filter.current) delete filter.current;
+    if (filter.pageSize) delete filter.pageSize;
+
+    if (!current) current = 1;
+    if (!pageSize) pageSize = 10;
+
+    const totalItems = (await this.foodModel.find(filter)).length;
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    const skip = (current - 1) * pageSize;
+
+    const results = await this.foodModel
+      .find(filter)
+      .limit(pageSize)
+      .skip(skip)
+      .select('-password')
+      .sort(sort as any);
+
+    return {
+      resultMessage: {
+        en: 'Successfull retrieve all foods',
+        vn: 'Lấy danh sách thực phẩm thành công',
+      },
+      resultCode: '00188',
+      food: results,
+      totalPages,
     };
   }
 }
