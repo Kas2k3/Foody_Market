@@ -13,6 +13,7 @@ import { ConfigService } from '@nestjs/config';
 export interface IUser {
   email: string;
   _id: ObjectId;
+  roles: string;
 }
 @Injectable()
 export class AuthService {
@@ -33,7 +34,7 @@ export class AuthService {
   }
 
   async login(user: IUser) {
-    const payload = { email: user.email, sub: user._id };
+    const payload = { email: user.email, sub: user._id, roles: user.roles };
     return {
       resultMessage: {
         en: 'You logged in successfully.',
@@ -51,7 +52,7 @@ export class AuthService {
   }
 
   private generateRefreshToken(user: IUser) {
-    const payload = { email: user.email, sub: user._id };
+    const payload = { email: user.email, sub: user._id, roles: user.roles };
     return this.jwtService.sign(payload, {
       expiresIn: this.configService.get<string>(
         'REFRESH_JWT_ACCESS_TOKEN_EXPIRED',

@@ -9,11 +9,16 @@ import { JwtAuthGuard } from './auth/passport/jwt-auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { FoodModule } from '@/modules/food/food.module';
+// import { CategoryModule } from '@/modules/category/category.module';
+// import { UnitModule } from '@/modules/unit/unit.module';
 
 @Module({
   imports: [
     UsersModule,
     AuthModule,
+    FoodModule,
+    // CategoryModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],

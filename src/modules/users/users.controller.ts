@@ -1,3 +1,4 @@
+import { JwtAuthGuard } from './../../auth/passport/jwt-auth.guard';
 import {
   Controller,
   Get,
@@ -8,12 +9,15 @@ import {
   Delete,
   Query,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import mongoose from 'mongoose';
 import { Public } from '@/decorator/customize';
+import { RolesGuard } from '@/auth/passport/roles.guard';
+import { Roles } from '@/decorator/roles.decorator';
 
 @Controller('user')
 export class UsersController {
@@ -27,6 +31,8 @@ export class UsersController {
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN')
   async findAll(
     @Query() query: string,
     @Query('current') current: string,
