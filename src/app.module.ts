@@ -59,4 +59,4 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     },
   ],
 })
-export class AppModule { }
+export class AppModule {}
