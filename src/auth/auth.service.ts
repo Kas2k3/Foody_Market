@@ -124,4 +124,17 @@ export class AuthService {
   async changePassword(data: ChangePasswordAuthDto) {
     return await this.usersService.changePassword(data);
   }
+
+  // async logout(userId: string) {
+  //   const redisClient = this.redisService.getClient();
+  //   await redisClient.del(`auth-token:${userId}`);
+
+  //   return {
+  //     resultMessage: {
+  //       en: 'Successfully logged out',
+  //       vn: 'Đăng xuất thành công',
+  //     },
+  //     resultCode: '00179',
+  //   };
+  // }
 }

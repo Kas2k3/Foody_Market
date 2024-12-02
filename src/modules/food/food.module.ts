@@ -7,8 +7,10 @@ import { FoodController } from './food.controller';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Food.name, schema: FoodSchema }]),
+    FoodModule,
   ],
   controllers: [FoodController],
   providers: [FoodService],
+  exports: [MongooseModule, FoodService],
 })
 export class FoodModule { }

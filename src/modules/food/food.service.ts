@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Food, FoodDocument } from './schemas/food.schema';
@@ -48,11 +52,23 @@ export class FoodService {
     };
   }
 
-  async removeFood(id: string): Promise<any> {
+  async removeFood(id: string, userId: string): Promise<any> {
+    const food = await this.foodModel.findById(id);
+    if (!food) {
+      throw new BadRequestException('Food not found');
+    }
+
+    if (userId !== food.userIdCreate.toString()) {
+      throw new ForbiddenException(
+        'You are not authorized to delete this food',
+      );
+    }
+
     await this.foodModel.findByIdAndDelete(id);
+
     return {
       resultMessage: {
-        en: 'Food deletion successfull',
+        en: 'Food deletion successful',
         vn: 'Xóa thực phẩm thành công',
       },
       resultCode: '00184',
@@ -77,7 +93,6 @@ export class FoodService {
       .find(filter)
       .limit(pageSize)
       .skip(skip)
-      .select('-password')
       .sort(sort as any);
 
     return {
@@ -88,6 +103,23 @@ export class FoodService {
       resultCode: '00188',
       food: results,
       totalPages,
+    };
+  }
+
+  async getFoodsByUserId(userIdCreate: string): Promise<any> {
+    const foods = await this.foodModel.find({ userIdCreate }).exec();
+
+    if (!foods || foods.length === 0) {
+      throw new BadRequestException('No foods found for this user.');
+    }
+
+    return {
+      resultMessage: {
+        en: 'Successfull retrieve all foods',
+        vn: 'Lấy danh sách thực phẩm thành công',
+      },
+      resultCode: '00188',
+      foods,
     };
   }
 }

@@ -6,18 +6,21 @@ export type FridgeItemDocument = FridgeItem & Document;
 @Schema({ timestamps: true })
 export class FridgeItem {
   @Prop({ required: true })
-  id: string;
+  itemName: string;
 
   @Prop({ required: true })
   quantity: number;
 
   @Prop()
+  useWithin: number;
+
+  @Prop()
   note: string;
 
-  @Prop({ type: Date, required: true })
+  @Prop({ type: Date })
   startDate: Date;
 
-  @Prop({ type: Date, required: true })
+  @Prop({ type: Date })
   expiredDate: Date;
 
   @Prop({ type: Types.ObjectId, ref: 'Food', required: true })
