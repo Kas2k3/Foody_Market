@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foody_mart_prj/ui/pages/home/home_page.dart';
+import 'package:foody_mart_prj/ui/pages/login/login_page.dart';
 
 void main() {
   runApp(FoodyMartApp());
@@ -15,7 +16,7 @@ class FoodyMartApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.orange,
       ),
-      home: HomePage(),
+      home: LoginPage(),
     );
   }
 }
