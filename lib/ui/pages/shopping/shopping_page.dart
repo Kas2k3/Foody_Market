@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../service/shopping_api_service.dart';
+import '../../../services/shopping_api_service.dart';
 
 class ShoppingPage extends StatefulWidget {
   @override

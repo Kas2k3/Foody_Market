@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:foody_mart_prj/ui/pages/home/section_detail_page.dart';
+
 import '../../../gen/assets.gen.dart';
 import '../me/me_page.dart';
 import '../schedule/schedule_page.dart';
@@ -14,10 +16,10 @@ class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
-    HomeContent(),     // Main content of the Home page
-    ShoppingPage(),    // Shopping page
-    SchedulePage(),    // Schedule page
-    MePage(),          // Me page
+    HomeContent(),
+    ShoppingPage(),
+    SchedulePage(),
+    MePage(),
   ];
 
   @override
@@ -28,7 +30,7 @@ class _HomePageState extends State<HomePage> {
           'Foody Mart',
           style: TextStyle(
             color: Colors.white,
-            fontSize: 36,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -41,33 +43,45 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
         backgroundColor: const Color(0xFFBF4E19),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(10),
+          ),
+        ),
       ),
-      body: _pages[_currentIndex], // Show the selected page
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: _pages[_currentIndex],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
             icon: SvgPicture.asset(Assets.icons.icHome),
             label: 'Home',
+            backgroundColor: const Color(0xFFFEC543),
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(Assets.icons.icShoppingCart),
             label: 'Shopping',
+            backgroundColor: const Color(0xFFFEC543),
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(Assets.icons.icSchedule),
             label: 'Schedule',
+            backgroundColor: const Color(0xFFFEC543),
           ),
           BottomNavigationBarItem(
             icon: SvgPicture.asset(Assets.icons.icUser),
             label: 'Me',
+            backgroundColor: const Color(0xFFFEC543),
           ),
         ],
-        currentIndex: _currentIndex, // Highlight the current page
-        selectedItemColor: Colors.orange,
+        currentIndex: _currentIndex,
+        selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
           setState(() {
-            _currentIndex = index; // Update the selected page index
+            _currentIndex = index;
           });
         },
       ),
@@ -76,6 +90,33 @@ class _HomePageState extends State<HomePage> {
 }
 
 class HomeContent extends StatelessWidget {
+  final List<String> recentFoods = [
+    'Trứng chiên nước mắm',
+    'Cá kho tộ',
+    'Rau muống xào tỏi',
+    'Canh chua cá lóc',
+    'Thịt kho tàu',
+    'Gà xào sả ớt',
+  ];
+
+  final List<String> todayFood = [
+    'Cơm tấm sườn bì chả',
+    'Bún bò Huế',
+    'Phở gà',
+    'Bánh mì thịt',
+    'Hủ tiếu nam vang',
+    'Cơm gà xối mỡ',
+  ];
+
+  final List<String> recipes = [
+    'Lòng xào giá mướp',
+    'Cá kho tộ',
+    'Thịt kho tàu',
+    'Canh khổ qua nhồi thịt',
+    'Gà kho gừng',
+    'Rau muống xào tỏi',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -84,15 +125,15 @@ class HomeContent extends StatelessWidget {
         children: [
           Section(
             title: 'Thực phẩm gần đây',
-            items: ['Item 1', 'Item 2', 'Item 3'],
+            items: recentFoods,
           ),
           Section(
             title: 'Hôm nay ăn gì?',
-            items: ['Item 4', 'Item 5', 'Item 6'],
+            items: todayFood,
           ),
           Section(
             title: 'Công thức nấu ăn',
-            items: ['Item 7', 'Item 8', 'Item 9'],
+            items: recipes,
           ),
           ShoppingSection(),
         ],
@@ -110,7 +151,7 @@ class Section extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -127,7 +168,15 @@ class Section extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  // Action for "See All"
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SectionDetailPage(
+                        title: title,
+                        items: items,
+                      ),
+                    ),
+                  );
                 },
                 child: const Text(
                   '>> Xem tất cả',
@@ -137,7 +186,7 @@ class Section extends StatelessWidget {
             ],
           ),
           Container(
-            height: 120, // Height of the section's horizontal list
+            height: 150,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: items.length,
@@ -145,26 +194,24 @@ class Section extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.only(right: 8.0),
                   child: Card(
-                    child: Container(
-                      width: 100,
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: Image.network(
-                              'https://via.placeholder.com/100',
-                              fit: BoxFit.cover,
-                            ),
+                    elevation: 4,
+                    child: Column(
+                      children: [
+                        Image.network(
+                          'https://via.placeholder.com/100',
+                          height: 100,
+                          width: 100,
+                          fit: BoxFit.cover,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            items[index],
+                            style: const TextStyle(fontSize: 14),
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              items[index],
-                              style: const TextStyle(fontSize: 12),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 );
@@ -177,24 +224,101 @@ class Section extends StatelessWidget {
   }
 }
 
-class ShoppingSection extends StatelessWidget {
+class ShoppingSection extends StatefulWidget {
+  @override
+  _ShoppingSectionState createState() => _ShoppingSectionState();
+}
+
+class _ShoppingSectionState extends State<ShoppingSection> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Thực phẩm cần mua',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.grey[200],
+            borderRadius: BorderRadius.circular(10),
           ),
-          ListTile(
-            leading: Image.network('https://via.placeholder.com/50'),
-            title: const Text('Cải thảo/ Cải bao'),
-            subtitle: const Text('Số lượng: 2 bắp'),
+          child: TabBar(
+            controller: _tabController,
+            indicator: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: const Color(0xFFBF4E19),
+            ),
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.black,
+            tabs: const [
+              Tab(text: 'Thực phẩm cần mua'),
+              Tab(text: 'Thực phẩm trong tủ lạnh'),
+            ],
           ),
-        ],
+        ),
+        SizedBox(
+          height: 200, // Điều chỉnh chiều cao phù hợp
+          child: TabBarView(
+            controller: _tabController,
+            children: [
+              // Tab 1: Cần mua ngay
+              ListView(
+                children: [
+                  _buildShoppingItem('Cải thảo/ Cải bao', '2 bắp'),
+                  _buildShoppingItem('Thịt heo', '500g'),
+                  _buildShoppingItem('Trứng gà', '10 quả'),
+                ],
+              ),
+              // Tab 2: Đã mua
+              ListView(
+                children: [
+                  _buildShoppingItem('Cà rốt', '300g', isDone: true),
+                  _buildShoppingItem('Khoai tây', '400g', isDone: true),
+                  _buildShoppingItem('Hành lá', '100g', isDone: true),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildShoppingItem(String name, String quantity, {bool isDone = false}) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      child: ListTile(
+        leading: Image.network('https://via.placeholder.com/50'),
+        title: Text(
+          name,
+          style: TextStyle(
+            decoration: isDone ? TextDecoration.lineThrough : null,
+          ),
+        ),
+        subtitle: Text('Số lượng: $quantity'),
+        trailing: isDone
+            ? const Icon(Icons.check_circle, color: Colors.green)
+            : IconButton(
+          icon: const Icon(Icons.shopping_cart),
+          onPressed: () {
+            // Xử lý logic khi nhấn vào nút mua
+          },
+        ),
       ),
     );
   }

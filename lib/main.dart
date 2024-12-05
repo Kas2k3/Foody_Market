@@ -16,7 +16,7 @@ class FoodyMartApp extends StatelessWidget {
       theme: ThemeData(
         primaryColor: Colors.orange,
       ),
-      home: LoginPage(),
+      home: HomePage(),
     );
   }
 }

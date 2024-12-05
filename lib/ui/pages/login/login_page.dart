@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foody_mart_prj/ui/pages/login/register_page.dart';
 import '../../../gen/assets.gen.dart';
+import '../../../services/user_services.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,6 +15,89 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscureText = true;
+  bool _isLoading = false; // Added to manage loading state
+  final UserService _userService = UserService(); // Create an instance of UserService
+
+  void _performLogin() async {
+    // Validate input fields
+    if (_usernameController.text.isEmpty || _passwordController.text.isEmpty) {
+      _showErrorDialog('Please enter both email and password');
+      return;
+    }
+
+    // Set loading state
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Call login method from UserService
+      final user = await _userService.login(
+          _usernameController.text.trim(),
+          _passwordController.text.trim()
+      );
+
+      // Set loading state back to false
+      setState(() {
+        _isLoading = false;
+      });
+
+      // Handle login result
+      if (user != null) {
+        // Successful login - navigate to next screen or perform action
+        _showSuccessDialog('Login Successful');
+        // TODO: Navigate to home page or dashboard
+        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+      } else {
+        // Login failed
+        _showErrorDialog('Login Failed. Please check your credentials.');
+      }
+    } catch (e) {
+      // Handle any unexpected errors
+      setState(() {
+        _isLoading = false;
+      });
+      _showErrorDialog('An error occurred: ${e.toString()}');
+    }
+  }
+
+  // Helper method to show error dialog
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Error'),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Okay'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+  // Helper method to show success dialog
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Success'),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Okay'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          )
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                       TextField(
                         controller: _usernameController,
                         decoration: InputDecoration(
-                          labelText: 'Username',
+                          labelText: 'Email',
                           filled: true,
                           fillColor: Colors.white,
                           border: OutlineInputBorder(
@@ -86,7 +170,9 @@ class _LoginPageState extends State<LoginPage> {
                           color: Color(0xFFBF4E19),
                           borderRadius: BorderRadius.circular(20.r),
                         ),
-                        child: TextButton(
+                        child: _isLoading
+                            ? Center(child: CircularProgressIndicator(color: Colors.white))
+                            : TextButton(
                           onPressed: _performLogin,
                           child: Text(
                             'Login Now',
@@ -95,19 +181,6 @@ class _LoginPageState extends State<LoginPage> {
                               fontWeight: FontWeight.w700,
                               color: Colors.white,
                             ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 16.h),
-                      TextButton(
-                        onPressed: () {
-                          // TODO: Implement forgot password functionality
-                        },
-                        child: Text(
-                          'Forgot Password?',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.sp,
                           ),
                         ),
                       ),
@@ -127,7 +200,6 @@ class _LoginPageState extends State<LoginPage> {
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 14.sp,
-                              decoration: TextDecoration.underline,
                             ),
                           ),
                         ),
@@ -142,17 +214,6 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
-  }
-
-  void _performLogin() {
-    // TODO: Implement login logic
-    String username = _usernameController.text;
-    String password = _passwordController.text;
-
-    // Add your authentication logic here
-    // For now, just print the credentials
-    print('Username: $username');
-    print('Password: $password');
   }
 
   @override
