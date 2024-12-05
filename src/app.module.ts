@@ -11,6 +11,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { FoodModule } from '@/modules/food/food.module';
 import { FridgeItemModule } from '@/modules/fridge/fridge.module';
+import { PlanModule } from '@/modules/plan/plan.module';
 // import { CategoryModule } from '@/modules/category/category.module';
 // import { UnitModule } from '@/modules/unit/unit.module';
 
@@ -20,6 +21,7 @@ import { FridgeItemModule } from '@/modules/fridge/fridge.module';
     AuthModule,
     FoodModule,
     FridgeItemModule,
+    PlanModule,
     // CategoryModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({

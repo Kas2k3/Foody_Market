@@ -22,7 +22,7 @@ export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private readonly mailerService: MailerService,
-  ) { }
+  ) {}
 
   isInfoExist = async (info: string) => {
     const user = await this.userModel.exists({

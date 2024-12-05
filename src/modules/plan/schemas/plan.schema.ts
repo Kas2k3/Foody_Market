@@ -6,9 +6,6 @@ export type PlanDocument = Plan & Document;
 @Schema({ timestamps: true })
 export class Plan {
   @Prop({ required: true })
-  id: string;
-
-  @Prop({ required: true })
   name: string;
 
   @Prop({ required: true, type: Date })
@@ -22,6 +19,10 @@ export class Plan {
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
   userId: Types.ObjectId;
+
+  createdAt?: Date;
+  updatedAt?: Date;
+  
 }
 
 export const PlanSchema = SchemaFactory.createForClass(Plan);
