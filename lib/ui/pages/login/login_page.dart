@@ -1,164 +1,191 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:foody_mart_prj/ui/pages/login/register_page.dart';
-import '../../../gen/assets.gen.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+import '../../../bloc/login/login_bloc.dart';
+import '../../../bloc/login/login_event.dart';
+import '../../../bloc/login/login_state.dart';
+import '../../../gen/assets.gen.dart';
+import '../../../services/login_repository.dart';
+import '../home/home_page.dart';
+
+class LoginPage extends StatelessWidget {
+  LoginPage({Key? key}) : super(key: key);
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => LoginBloc(
+        loginRepository: LoginRepository(),
+      ),
+      child: LoginView(
+        emailController: _emailController,
+        passwordController: _passwordController,
+      ),
+    );
+  }
 }
 
-class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+class LoginView extends StatefulWidget {
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+
+  const LoginView({
+    super.key,
+    required this.emailController,
+    required this.passwordController,
+  });
+
+  @override
+  State<LoginView> createState() => _LoginViewState();
+}
+
+class _LoginViewState extends State<LoginView> {
   bool _obscureText = true;
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(context);
-
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(Assets.images.imgLogin.path),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 16.w),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Column(
-                    children: [
-                      TextField(
-                        controller: _usernameController,
-                        decoration: InputDecoration(
-                          labelText: 'Username',
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          prefixIcon: Icon(Icons.person),
-                        ),
-                      ),
-                      SizedBox(height: 16.h),
-                      TextField(
-                        controller: _passwordController,
-                        obscureText: _obscureText,
-                        decoration: InputDecoration(
-                          labelText: 'Password',
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.r),
-                          ),
-                          prefixIcon: Icon(Icons.lock),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscureText
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscureText = !_obscureText;
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 16.h),
-                      Container(
-                        width: double.infinity,
-                        height: 48.h,
-                        decoration: BoxDecoration(
-                          color: Color(0xFFBF4E19),
-                          borderRadius: BorderRadius.circular(20.r),
-                        ),
-                        child: TextButton(
-                          onPressed: _performLogin,
-                          child: Text(
-                            'Login Now',
-                            style: TextStyle(
-                              fontSize: 16.sp,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 16.h),
-                      TextButton(
-                        onPressed: () {
-                          // TODO: Implement forgot password functionality
-                        },
-                        child: Text(
-                          'Forgot Password?',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14.sp,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 16.h),
-                      Center(
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RegisterPage(),
-                              ),
-                            );
-                          },
-                          child: Text(
-                            'Đăng ký nếu chưa có tài khoản',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 14.sp,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 24.h),
-                    ],
-                  ),
-                ],
+      body: BlocListener<LoginBloc, LoginState>(
+        listener: (context, state) {
+          if (state is LoginFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.error),
+                backgroundColor: Colors.red,
               ),
-            ],
+            );
+          }
+          if (state is LoginSuccess) {
+            // Save user to some global state management if needed
+            // Example with Provider:
+            // context.read<UserProvider>().setUser(state.user);
+
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => HomePage()),
+            );
+          }
+        },
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(Assets.images.imgLogin.path),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                _buildLoginForm(),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  void _performLogin() {
-    // TODO: Implement login logic
-    String username = _usernameController.text;
-    String password = _passwordController.text;
+  Widget _buildLoginForm() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: widget.emailController,
+          decoration: InputDecoration(
+            labelText: 'Email',
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            prefixIcon: const Icon(Icons.person),
+          ),
+        ),
+        SizedBox(height: 16.h),
+        TextField(
+          controller: widget.passwordController,
+          obscureText: _obscureText,
+          decoration: InputDecoration(
+            labelText: 'Password',
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+            prefixIcon: const Icon(Icons.lock),
+            suffixIcon: IconButton(
+              icon: Icon(
+                _obscureText ? Icons.visibility : Icons.visibility_off,
+              ),
+              onPressed: () {
+                setState(() {
+                  _obscureText = !_obscureText;
+                });
+              },
+            ),
+          ),
+        ),
+        SizedBox(height: 16.h),
+        BlocBuilder<LoginBloc, LoginState>(
+          builder: (context, state) {
+            return Container(
+              width: double.infinity,
+              height: 48.h,
+              decoration: BoxDecoration(
+                color: const Color(0xFFBF4E19),
+                borderRadius: BorderRadius.circular(20.r),
+              ),
+              child: TextButton(
+                onPressed: state is LoginLoading
+                    ? null
+                    : () {
+                  FocusScope.of(context).unfocus();
+                  final email = widget.emailController.text;
+                  final password = widget.passwordController.text;
 
-    // Add your authentication logic here
-    // For now, just print the credentials
-    print('Username: $username');
-    print('Password: $password');
-  }
+                  if (email.isEmpty || password.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Please fill in all fields'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
 
-  @override
-  void dispose() {
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+                  context.read<LoginBloc>().add(
+                    LoginSubmitted(
+                      email: email,
+                      password: password,
+                    ),
+                  );
+                },
+                child: state is LoginLoading
+                    ? const CircularProgressIndicator(
+                  color: Colors.white,
+                )
+                    : Text(
+                  'Login Now',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+        // ... Rest of your UI code
+      ],
+    );
   }
 }
