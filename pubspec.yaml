@@ -163,17 +163,18 @@ flutter:
   uses-material-design: true
 
   assets:
-    - Assets/icons/
+    - assets/icons/
+    - assets/images/
 
   fonts:
     - family: SF-Pro
       fonts:
-        - asset: Assets/fonts/sf-pro/SFPRODISPLAYBOLD.otf
-        - asset: Assets/fonts/sf-pro/SFPRODISPLAYLIGHT.otf
-        - asset: Assets/fonts/sf-pro/SFPRODISPLAYMEDIUM.otf
-        - asset: Assets/fonts/sf-pro/SFPRODISPLAYREGULAR.otf
-        - asset: Assets/fonts/sf-pro/SFPRODISPLAYSEMIBOLD.otf
-        - asset: Assets/fonts/sf-pro/SFPRODISPLAYEXTRALIGHT.otf
+        - asset: assets/fonts/sf-pro/SFPRODISPLAYBOLD.otf
+        - asset: assets/fonts/sf-pro/SFPRODISPLAYLIGHT.otf
+        - asset: assets/fonts/sf-pro/SFPRODISPLAYMEDIUM.otf
+        - asset: assets/fonts/sf-pro/SFPRODISPLAYREGULAR.otf
+        - asset: assets/fonts/sf-pro/SFPRODISPLAYSEMIBOLD.otf
+        - asset: assets/fonts/sf-pro/SFPRODISPLAYEXTRALIGHT.otf
 
 flutter_intl:
   enabled: true

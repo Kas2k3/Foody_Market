@@ -18,7 +18,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.init(context);
+    // ScreenUtil.init(context);
 
     return Scaffold(
       appBar: AppBar(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../bloc/login/login_bloc.dart';
 import '../../../bloc/login/login_event.dart';
@@ -79,7 +78,7 @@ class _LoginViewState extends State<LoginView> {
             ),
           ),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.end,
@@ -104,12 +103,12 @@ class _LoginViewState extends State<LoginView> {
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.r),
+              borderRadius: BorderRadius.circular(10),
             ),
             prefixIcon: const Icon(Icons.person),
           ),
         ),
-        SizedBox(height: 16.h),
+        const SizedBox(height: 16),
         TextField(
           controller: widget.passwordController,
           obscureText: _obscureText,
@@ -118,7 +117,7 @@ class _LoginViewState extends State<LoginView> {
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.r),
+              borderRadius: BorderRadius.circular(10),
             ),
             prefixIcon: const Icon(Icons.lock),
             suffixIcon: IconButton(
@@ -133,15 +132,15 @@ class _LoginViewState extends State<LoginView> {
             ),
           ),
         ),
-        SizedBox(height: 16.h),
+        const SizedBox(height: 16),
         BlocBuilder<LoginBloc, LoginState>(
           builder: (context, state) {
             return Container(
               width: double.infinity,
-              height: 48.h,
+              height: 48,
               decoration: BoxDecoration(
                 color: const Color(0xFFBF4E19),
-                borderRadius: BorderRadius.circular(20.r),
+                borderRadius: BorderRadius.circular(20),
               ),
               child: TextButton(
                 onPressed: state is LoginLoading
@@ -172,10 +171,10 @@ class _LoginViewState extends State<LoginView> {
                     ? const CircularProgressIndicator(
                   color: Colors.white,
                 )
-                    : Text(
+                    : const Text(
                   'Login Now',
                   style: TextStyle(
-                    fontSize: 16.sp,
+                    fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
                   ),
