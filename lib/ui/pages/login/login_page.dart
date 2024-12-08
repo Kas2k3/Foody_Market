@@ -5,7 +5,7 @@ import '../../../bloc/login/login_bloc.dart';
 import '../../../bloc/login/login_event.dart';
 import '../../../bloc/login/login_state.dart';
 import '../../../gen/assets.gen.dart';
-import '../../../services/login_repository.dart';
+import '../../../repository/login_repository.dart';
 import '../home/home_page.dart';
 
 class LoginPage extends StatelessWidget {

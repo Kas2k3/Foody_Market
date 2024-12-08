@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../services/login_repository.dart';
+import '../../repository/login_repository.dart';
 import '../../utils/secure_storage.dart';
 import 'login_event.dart';
 import 'login_state.dart';
