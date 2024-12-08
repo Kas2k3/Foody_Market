@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../service/shopping_api_service.dart';
+
 class ShoppingPage extends StatefulWidget {
   @override
   _ShoppingPageState createState() => _ShoppingPageState();
@@ -113,7 +115,7 @@ class _ShoppingPageState extends State<ShoppingPage> {
             elevation: 4,
             margin: const EdgeInsets.only(bottom: 12),
             child: ListTile(
-              leading: Image.network('https://via.placeholder.com/50'),
+              // leading: Image.network('https://via.placeholder.com/50'),
               title: Text(item['name']!),
               subtitle: Text('Số lượng: ${item['quantity']}'),
               trailing: IconButton(
@@ -124,12 +126,23 @@ class _ShoppingPageState extends State<ShoppingPage> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _showSearchDialog(context);
-        },
-        backgroundColor: Colors.orange,
-        child: Icon(Icons.add, color: Colors.white),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () => _showCreateFoodDialog(context),
+            backgroundColor: Colors.green,
+            heroTag: 'createFood',
+            child: Icon(Icons.create, color: Colors.white),
+          ),
+          SizedBox(width: 16),
+          FloatingActionButton(
+            onPressed: () => _showSearchDialog(context),
+            backgroundColor: Colors.orange,
+            heroTag: 'searchFood',
+            child: Icon(Icons.add, color: Colors.white),
+          ),
+        ],
       ),
     );
   }
@@ -184,6 +197,69 @@ class _ShoppingPageState extends State<ShoppingPage> {
           },
         );
       },
+    );
+  }
+
+  void _showCreateFoodDialog(BuildContext context) {
+    final nameController = TextEditingController();
+    final categoryController = TextEditingController();
+    final unitController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Tạo thực phẩm mới'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: InputDecoration(labelText: 'Tên thực phẩm'),
+            ),
+            TextField(
+              controller: categoryController,
+              decoration: InputDecoration(labelText: 'Danh mục'),
+            ),
+            TextField(
+              controller: unitController,
+              decoration: InputDecoration(labelText: 'Đơn vị'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Hủy'),
+          ),
+          TextButton(
+            onPressed: () async {
+              print('Bắt đầu tạo thức ăn mới');
+              print('Tên: ${nameController.text}');
+              print('Danh mục: ${categoryController.text}');
+              print('Đơn vị: ${unitController.text}');
+              final apiService = ShoppingApiService();
+              final result = await apiService.createFood(
+                name: nameController.text,
+                category: categoryController.text,
+                unit: unitController.text,
+                token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImhhdmluaHBodW9jQGdtYWlsLmNvbSIsInN1YiI6IjY3MGZlZjhkNmVmNjlhMDM3MWQ5MjUzNiIsImlhdCI6MTczMjgxMzc1OSwiZXhwIjoxNzY0MzQ5NzU5fQ.WqsBMbvmQrkGQQZTOo5LYY-1fCGyuIEmrYojlQ6brOc'
+              );
+
+              if (result != null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Tạo thực phẩm thành công!')),
+                );
+                Navigator.pop(context);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Có lỗi xảy ra khi tạo thực phẩm')),
+                );
+              }
+            },
+            child: Text('Tạo'),
+          ),
+        ],
+      ),
     );
   }
 }
