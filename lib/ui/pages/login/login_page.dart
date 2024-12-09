@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foody_mart_prj/ui/pages/login/register_page.dart';
 import '../../../gen/assets.gen.dart';
 import '../../../services/user_services.dart';
+import '../home/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -46,8 +47,10 @@ class _LoginPageState extends State<LoginPage> {
       if (user != null) {
         // Successful login - navigate to next screen or perform action
         _showSuccessDialog('Login Successful');
-        // TODO: Navigate to home page or dashboard
-        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage()));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
       } else {
         // Login failed
         _showErrorDialog('Login Failed. Please check your credentials.');

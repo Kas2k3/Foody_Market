@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foody_mart_prj/services/register_api_service.dart';
 import '../../../gen/assets.gen.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -117,7 +118,10 @@ class _RegisterPageState extends State<RegisterPage> {
                       borderRadius: BorderRadius.circular(20.r),
                     ),
                     child: TextButton(
-                      onPressed: _performRegistration,
+                      onPressed: () {
+                        print('Button Pressed');
+                        _performRegistration();
+                      },
                       child: Text(
                         'Đăng Ký',
                         style: TextStyle(
@@ -137,12 +141,27 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  void _performRegistration() {
-    // TODO: Implement registration logic
+  Future<void> _performRegistration() async {
     String name = _nameController.text;
     String email = _emailController.text;
     String username = _usernameController.text;
     String password = _passwordController.text;
+
+    try {
+      RegisterApiService apiService = RegisterApiService();
+      Map<String, dynamic> response = await apiService.registerUser(
+        name: name,
+        email: email,
+        username: username,
+        password: password,
+      );
+
+      // Handle the response as needed
+      print('Registration successful: $response');
+    } catch (e) {
+      // Handle the error
+      print('Registration failed: $e');
+    }
 
     // Add your registration validation and submission logic here
     print('Name: $name');

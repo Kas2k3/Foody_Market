@@ -1,4 +1,3 @@
-// Tab Me UI implementation
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -6,13 +5,6 @@ class MePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Thông tin người dùng',
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Color(0xFFBF4E19),
-      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,7 +79,32 @@ class MePage extends StatelessWidget {
                   backgroundColor: Colors.red,
                   minimumSize: Size(double.infinity, 50),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Xác nhận'),
+                        content: Text('Bạn có chắc chắn muốn thoát không?'),
+                        actions: <Widget>[
+                          TextButton(
+                            child: Text('Không'),
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Đóng dialog
+                            },
+                          ),
+                          TextButton(
+                            child: Text('Có'),
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Đóng dialog
+                              Navigator.pop(context); // Thực hiện pop để thoát
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
                 child: Text('Đăng xuất', style: TextStyle(color: Colors.white)),
               ),
             ),

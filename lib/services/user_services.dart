@@ -6,7 +6,7 @@ import '../models/user.dart';
 
 class UserService {
   Future<User?> login(String email, String password) async {
-    final uri = Uri.parse("http://localhost:8080/it4788/auth/login");
+    final uri = Uri.parse("http://10.0.2.2:8080/it4788/auth/login");
     try {
       final response = await http.post(
         uri,

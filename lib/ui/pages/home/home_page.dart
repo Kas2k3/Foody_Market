@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:foody_mart_prj/ui/pages/home/section_detail_page.dart';
 
@@ -26,6 +27,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           'Foody Mart',
           style: TextStyle(
@@ -186,7 +188,7 @@ class Section extends StatelessWidget {
             ],
           ),
           Container(
-            height: 150,
+            height: 170,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: items.length,
@@ -195,23 +197,30 @@ class Section extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 8.0),
                   child: Card(
                     elevation: 4,
-                    child: Column(
-                      children: [
-                        Image.network(
-                          'https://via.placeholder.com/100',
-                          height: 100,
-                          width: 100,
-                          fit: BoxFit.cover,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            items[index],
-                            style: const TextStyle(fontSize: 14),
-                            overflow: TextOverflow.ellipsis,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(Assets.images.imgMonan1.path),
+                              ),
+                            ),
+                            height: 100,
+                            width: 100,
                           ),
-                        ),
-                      ],
+                          Container(
+                            width: 100,
+                            child: Text(
+                              items[index],
+                              style: const TextStyle(fontSize: 14),
+                              maxLines: 2,
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -263,8 +272,20 @@ class _ShoppingSectionState extends State<ShoppingSection> with SingleTickerProv
               borderRadius: BorderRadius.circular(10),
               color: const Color(0xFFBF4E19),
             ),
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.black,
+            labelStyle: TextStyle(
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+            unselectedLabelStyle: TextStyle(
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w700,
+              color: Colors.black,
+            ),
+            indicatorSize: TabBarIndicatorSize.tab,
+            labelPadding: EdgeInsets.zero,
+            dividerColor: Colors.transparent,
+            indicatorWeight: 0,
             tabs: const [
               Tab(text: 'Thực phẩm cần mua'),
               Tab(text: 'Thực phẩm trong tủ lạnh'),

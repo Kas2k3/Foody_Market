@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foody_mart_prj/ui/pages/home/home_page.dart';
 import 'package:foody_mart_prj/ui/pages/login/login_page.dart';
 
@@ -11,12 +12,16 @@ class FoodyMartApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Foody Mart',
-      theme: ThemeData(
-        primaryColor: Colors.orange,
+    return ScreenUtilInit(
+      designSize: const Size(375, 812),
+      minTextAdapt: true,
+      child: MaterialApp(
+        title: 'Foody Mart',
+        theme: ThemeData(
+          primaryColor: Colors.orange,
+        ),
+        home: LoginPage(),
       ),
-      home: HomePage(),
     );
   }
 }

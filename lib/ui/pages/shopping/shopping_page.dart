@@ -8,10 +8,10 @@ class ShoppingPage extends StatefulWidget {
 }
 
 class _ShoppingPageState extends State<ShoppingPage> {
-  final List<Map<String, String>> shoppingItems = [
-    {'name': 'Cải thảo', 'quantity': '2 bắp'},
-    {'name': 'Cà chua', 'quantity': '1 kg'},
-    {'name': 'Thịt bò', 'quantity': '500g'},
+  final List<Map<String, dynamic>> shoppingItems = [
+    {'name': 'Cải thảo', 'quantity': '2 bắp', 'id': null},
+    {'name': 'Cà chua', 'quantity': '1 kg', 'id': null},
+    {'name': 'Thịt bò', 'quantity': '500g', 'id': null},
   ];
 
   final List<Map<String, String>> availableItems = [
@@ -26,6 +26,10 @@ class _ShoppingPageState extends State<ShoppingPage> {
   List<Map<String, String>> filteredItems = [];
 
   bool isSearching = false;
+  final ShoppingApiService _apiService = ShoppingApiService();
+
+  // Hardcoded token - in a real app, this would be securely stored and managed
+  final String _token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImhhdmluaHBodW9jQGdtYWlsLmNvbSIsInN1YiI6IjY3MGZlZjhkNmVmNjlhMDM3MWQ5MjUzNiIsImlhdCI6MTczMjgxMzc1OSwiZXhwIjoxNzY0MzQ5NzU5fQ.WqsBMbvmQrkGQQZTOo5LYY-1fCGyuIEmrYojlQ6brOc';
 
   @override
   void initState() {
@@ -33,16 +37,68 @@ class _ShoppingPageState extends State<ShoppingPage> {
     filteredItems = availableItems; // Hiển thị tất cả item ban đầu
   }
 
-  void _addItem(Map<String, String> item) {
-    setState(() {
-      shoppingItems.add(item);
-    });
+  void _addItem(Map<String, String> item) async {
+    try {
+      // Call updateFood API to add or update the item
+      final result = await _apiService.updateFood(
+        name: item['name']!,
+        category: 'Uncategorized', // You might want to improve this
+        unit: _extractUnit(item['quantity']!),
+        token: _token,
+        id: '', // Server will likely generate an ID if empty
+        quantity: _extractQuantity(item['quantity']!),
+      );
+
+      if (result != null) {
+        setState(() {
+          shoppingItems.add({
+            'name': item['name']!,
+            'quantity': item['quantity']!,
+            'id': result
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Thêm thực phẩm thành công!')),
+          );
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Có lỗi xảy ra khi thêm thực phẩm')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Lỗi: $e')),
+      );
+    }
   }
 
-  void _removeItem(int index) {
-    setState(() {
-      shoppingItems.removeAt(index);
-    });
+  // Helper method to extract quantity from the quantity string
+  String _extractQuantity(String quantityString) {
+    // Remove non-numeric characters and keep only the number
+    return quantityString.replaceAll(RegExp(r'[^\d.]'), '');
+  }
+
+  // Helper method to extract unit from the quantity string
+  String _extractUnit(String quantityString) {
+    // Extract the non-numeric part
+    return quantityString.replaceAll(RegExp(r'[\d.]'), '').trim();
+  }
+
+  void _removeItem(int index) async {
+    final item = shoppingItems[index];
+    try {
+      // If you have a delete API, you would call it here
+      setState(() {
+        shoppingItems.removeAt(index);
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Xóa thực phẩm thành công!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Có lỗi xảy ra khi xóa thực phẩm')),
+      );
+    }
   }
 
   void _startSearch() {
@@ -71,41 +127,42 @@ class _ShoppingPageState extends State<ShoppingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: isSearching
-            ? TextField(
-          controller: _searchController,
-          autofocus: true,
-          decoration: InputDecoration(
-            hintText: 'Tìm thực phẩm...',
-            border: InputBorder.none,
-            hintStyle: TextStyle(color: Colors.white70),
-          ),
-          style: TextStyle(color: Colors.white),
-          onChanged: _search,
-        )
-            : Text(
-          'Danh Sách Mua Sắm',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Color(0xFFBF4E19),
-        actions: [
-          if (!isSearching)
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: _startSearch,
-            )
-          else
-            IconButton(
-              icon: Icon(Icons.close),
-              onPressed: _stopSearch,
-            ),
-        ],
-      ),
+      // appBar: AppBar(
+      //   automaticallyImplyLeading: false,
+      //   title: isSearching
+      //       ? TextField(
+      //     controller: _searchController,
+      //     autofocus: true,
+      //     decoration: InputDecoration(
+      //       hintText: 'Tìm thực phẩm...',
+      //       border: InputBorder.none,
+      //       hintStyle: TextStyle(color: Colors.white70),
+      //     ),
+      //     style: TextStyle(color: Colors.white),
+      //     onChanged: _search,
+      //   )
+      //       : Text(
+      //     'Danh Sách Mua Sắm',
+      //     style: TextStyle(
+      //       color: Colors.white,
+      //       fontSize: 24,
+      //       fontWeight: FontWeight.bold,
+      //     ),
+      //   ),
+      //   backgroundColor: Color(0xFFBF4E19),
+      //   actions: [
+      //     if (!isSearching)
+      //       IconButton(
+      //         icon: Icon(Icons.search),
+      //         onPressed: _startSearch,
+      //       )
+      //     else
+      //       IconButton(
+      //         icon: Icon(Icons.close),
+      //         onPressed: _stopSearch,
+      //       ),
+      //   ],
+      // ),
       body: ListView.builder(
         padding: const EdgeInsets.all(8.0),
         itemCount: shoppingItems.length,
@@ -115,7 +172,6 @@ class _ShoppingPageState extends State<ShoppingPage> {
             elevation: 4,
             margin: const EdgeInsets.only(bottom: 12),
             child: ListTile(
-              // leading: Image.network('https://via.placeholder.com/50'),
               title: Text(item['name']!),
               subtitle: Text('Số lượng: ${item['quantity']}'),
               trailing: IconButton(
@@ -137,7 +193,7 @@ class _ShoppingPageState extends State<ShoppingPage> {
           ),
           SizedBox(width: 16),
           FloatingActionButton(
-            onPressed: () => _showSearchDialog(context),
+            onPressed: () => _showUpdateFoodDialog(context),
             backgroundColor: Colors.orange,
             heroTag: 'searchFood',
             child: Icon(Icons.add, color: Colors.white),
@@ -147,7 +203,7 @@ class _ShoppingPageState extends State<ShoppingPage> {
     );
   }
 
-  void _showSearchDialog(BuildContext context) {
+  void _showUpdateFoodDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -183,8 +239,30 @@ class _ShoppingPageState extends State<ShoppingPage> {
                           leading: Icon(Icons.food_bank),
                           title: Text(item['name']!),
                           subtitle: Text('Số lượng: ${item['quantity']}'),
-                          onTap: () {
-                            _addItem(item);
+                          onTap: () async {
+                            // Gọi API updateFood khi người dùng chọn một mục
+                            final result = await _apiService.updateFood(
+                              name: item['name']!,
+                              category: 'Uncategorized', // Cải thiện nếu cần
+                              unit: _extractUnit(item['quantity']!),
+                              token: _token,
+                              id: item['id'] ?? '', // Sử dụng ID nếu có
+                              quantity: _extractQuantity(item['quantity']!),
+                            );
+
+                            if (result != null) {
+                              setState(() {
+                                // Cập nhật ID mới nếu cần
+                                item['id'] = result;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Cập nhật thực phẩm thành công!')),
+                                );
+                              });
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Có lỗi xảy ra khi cập nhật thực phẩm')),
+                              );
+                            }
                             Navigator.pop(context);
                           },
                         );
@@ -237,12 +315,11 @@ class _ShoppingPageState extends State<ShoppingPage> {
               print('Tên: ${nameController.text}');
               print('Danh mục: ${categoryController.text}');
               print('Đơn vị: ${unitController.text}');
-              final apiService = ShoppingApiService();
-              final result = await apiService.createFood(
+              final result = await _apiService.createFood(
                 name: nameController.text,
                 category: categoryController.text,
                 unit: unitController.text,
-                token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImhhdmluaHBodW9jQGdtYWlsLmNvbSIsInN1YiI6IjY3MGZlZjhkNmVmNjlhMDM3MWQ5MjUzNiIsImlhdCI6MTczMjgxMzc1OSwiZXhwIjoxNzY0MzQ5NzU5fQ.WqsBMbvmQrkGQQZTOo5LYY-1fCGyuIEmrYojlQ6brOc'
+                token: _token,
               );
 
               if (result != null) {

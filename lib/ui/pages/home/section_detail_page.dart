@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../gen/assets.gen.dart';
+
 class SectionDetailPage extends StatelessWidget {
   final String title;
   final List<String> items;
@@ -22,7 +24,7 @@ class SectionDetailPage extends StatelessWidget {
         child: GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            childAspectRatio: 0.8,
+            childAspectRatio: 1.0, // Adjusted aspect ratio for a more compact layout
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
           ),
@@ -30,21 +32,35 @@ class SectionDetailPage extends StatelessWidget {
           itemBuilder: (context, index) {
             return Card(
               elevation: 4,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0), // Added rounded corners to the card
+              ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Image.network(
-                    'https://via.placeholder.com/150',
-                    height: 150,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
+                  Container(
+                    height: 100, // Set the height of the container
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(8.0),
+                        topRight: Radius.circular(8.0),
+                      ),
+                      child: Image.asset(
+                        Assets.images.imgMonan1.path,
+                        width: 100, // Reduce the width of the image
+                        height: 100, // Reduce the height of the image
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       items[index],
-                      style: const TextStyle(fontSize: 16),
-                      maxLines: 2,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold, // Added bold font weight to the text
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
