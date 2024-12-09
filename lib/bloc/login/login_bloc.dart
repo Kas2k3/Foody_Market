@@ -32,8 +32,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       await SecureStorage.setRefreshToken(user!.refreshToken);
 
       emit(LoginSuccess(user!));
+      String? accessToken = await SecureStorage.getAccessToken();
+      print(accessToken);
     } catch (error) {
       emit(LoginFailure(error.toString()));
+
     }
   }
 }
