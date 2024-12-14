@@ -5,8 +5,6 @@ export type RecipeDocument = Recipe & Document;
 
 @Schema({ timestamps: true })
 export class Recipe {
-  @Prop({ required: true })
-  id: string;
 
   @Prop({ required: true })
   name: string;

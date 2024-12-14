@@ -10,5 +10,6 @@ import { FoodController } from './food.controller';
   ],
   controllers: [FoodController],
   providers: [FoodService],
+  exports: [FoodService],
 })
 export class FoodModule { }

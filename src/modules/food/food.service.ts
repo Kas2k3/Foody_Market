@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Food, FoodDocument } from './schemas/food.schema';
@@ -11,6 +11,14 @@ export class FoodService {
   constructor(
     @InjectModel(Food.name) private readonly foodModel: Model<FoodDocument>,
   ) { }
+
+  async getFoodIdByName(foodName: string): Promise<string> {
+    const food = await this.foodModel.findOne({ name: foodName });
+    if (!food) {
+      throw new NotFoundException('Food with the given name not found');
+    }
+    return food._id.toString();
+  }
 
   async createFood(createFoodDto: CreateFoodDto, userIdCreate: string) {
     const food = new this.foodModel({

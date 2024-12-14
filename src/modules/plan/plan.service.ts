@@ -89,7 +89,7 @@ export class PlanService {
         en: 'Plan plan updated successfully',
         vn: 'Cập nhật kế hoạch ăn uống thành công',
       },
-      resultCode: '00101',
+      resultCode: '00344',
       Plan: updatedPlan,
     };
   }
@@ -135,7 +135,7 @@ export class PlanService {
         en: 'Meal plans retrieved successfully',
         vn: 'Lấy kế hoạch ăn uống thành công',
       },
-      resultCode: '00162',
+      resultCode: '00348',
       plans,
     };
   }
