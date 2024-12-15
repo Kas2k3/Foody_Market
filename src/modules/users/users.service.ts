@@ -31,7 +31,10 @@ export class UsersService {
     if (user) return true;
     return false;
   };
-
+  async findByUsername(username: string): Promise<User | null> {
+    return this.userModel.findOne({ username });
+  }
+  
   async create(createUserDto: CreateUserDto) {
     const {
       username,

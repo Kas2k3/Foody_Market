@@ -12,6 +12,8 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { FoodModule } from '@/modules/food/food.module';
 import { PlanModule } from '@/modules/plan/plan.module';
 import { RecipeModule } from './modules/recipe/recipe.module';
+import { ShoppingTaskModule } from './modules/shopping-task/shopping-task.module';
+import { ShoppingListModule } from './modules/shopping/shopping-list.module';
 // import { CategoryModule } from '@/modules/category/category.module';
 // import { UnitModule } from '@/modules/unit/unit.module';
 
@@ -22,6 +24,8 @@ import { RecipeModule } from './modules/recipe/recipe.module';
     FoodModule,
     PlanModule,
     RecipeModule,
+    ShoppingTaskModule,
+    ShoppingListModule,
     // CategoryModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({
