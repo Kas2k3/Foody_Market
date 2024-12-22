@@ -8,7 +8,7 @@ import {
   Body,
   Param,
   Req,
-  UseGuards, 
+  UseGuards,
   ForbiddenException,
   BadRequestException,
 } from '@nestjs/common';
@@ -20,23 +20,23 @@ import { JwtAuthGuard } from '@/auth/passport/jwt-auth.guard';
 
 @Controller('meal')
 export class PlanController {
-  constructor(private readonly planService: PlanService) {}
-  
+  constructor(private readonly planService: PlanService) { }
+
   // Get all meal plans
   @Get()
   @UseGuards(JwtAuthGuard)
   async getMealPlanByDate(@Query('date') date: string) {
     return this.planService.findPlansByDate(date);
   }
-  
+
   // Create a meal plan
   @Post()
   @UseGuards(JwtAuthGuard)
   async createPlan(@Body() createPlanDto: CreatePlanDto, @Req() request: any) {
-    const userIdCreate = request.user._id;
+    const userIdCreate = request.user.id;
     return this.planService.createPlan(createPlanDto, userIdCreate);
   }
-  
+
   // Update a meal plan
   @Put(':id')
   @UseGuards(JwtAuthGuard)
@@ -46,7 +46,7 @@ export class PlanController {
   ) {
     return this.planService.updatePlan(id, updatePlanDto);
   }
-  
+
   // Delete a meal plan
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
@@ -54,8 +54,7 @@ export class PlanController {
     if (!mongoose.isValidObjectId(id)) {
       throw new BadRequestException('Invalid ID format');
     }
-  
+
     return this.planService.removePlan(id);
   }
 }
-  

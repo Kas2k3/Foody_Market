@@ -43,7 +43,8 @@ export class Food {
   @Prop({ required: true, enum: UnitEnum })
   unit: UnitEnum;
 
-  @Prop({ required: true })
+  // @Prop({ required: true })
+  @Prop()
   userIdCreate: string;
 }
 

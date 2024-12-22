@@ -16,7 +16,7 @@ export class PlanService {
   constructor(
     @InjectModel(Plan.name) private readonly planModel: Model<PlanDocument>,
     @InjectModel(Food.name) private readonly foodModel: Model<FoodDocument>,
-  ) {}
+  ) { }
 
   // Create a Plan
   async createPlan(createPlanDto: CreatePlanDto, userId: string) {
@@ -26,7 +26,7 @@ export class PlanService {
       name: createPlanDto.name,
       timestamp: new Date(createPlanDto.timestamp),
       status: 'pending',
-      foodId: food._id,
+      foodId: food.id,
       userId,
     });
 
@@ -39,11 +39,11 @@ export class PlanService {
       },
       resultCode: '00322',
       newPlan: {
-        id: plan._id,
+        id: plan.id,
         name: plan.name,
         timestamp: plan.timestamp,
         status: plan.status,
-        FoodId: food._id,
+        FoodId: food.id,
         UserId: plan.userId,
         updatedAt: plan.updatedAt,
         createdAt: plan.createdAt,
@@ -67,8 +67,8 @@ export class PlanService {
 
     const food = await this.findOrCreateFood(updatePlanDto.newFoodName);
     const updateData: Partial<Plan> = {};
-    if(food){
-      updateData.foodId = new Types.ObjectId(food._id.toString());
+    if (food) {
+      updateData.foodId = new Types.ObjectId(food.id.toString());
     }
     updateData.name = updatePlanDto.newName;
 
@@ -128,8 +128,8 @@ export class PlanService {
         $lte: endOfDay,
       },
     })
-    .populate('foodId')  // Populate chi tiết thông tin foodId
-    .exec();
+      .populate('foodId')  // Populate chi tiết thông tin foodId
+      .exec();
     return {
       resultMessage: {
         en: 'Meal plans retrieved successfully',

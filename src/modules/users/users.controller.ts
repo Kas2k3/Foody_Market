@@ -8,20 +8,21 @@ import {
   Param,
   Delete,
   Query,
+  Request,
   BadRequestException,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import mongoose from 'mongoose';
+import mongoose, { ObjectId } from 'mongoose';
 import { Public } from '@/decorator/customize';
 import { RolesGuard } from '@/auth/passport/roles.guard';
 import { Roles } from '@/decorator/roles.decorator';
 
 @Controller('user')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Post()
   @Public()
@@ -42,8 +43,9 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @UseGuards(JwtAuthGuard)
+  async getUserById(@Param('id') id: ObjectId) {
+    return this.usersService.getUserById(id);
   }
 
   @Patch()
