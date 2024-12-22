@@ -10,6 +10,10 @@ import { APP_GUARD } from '@nestjs/core';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { FoodModule } from '@/modules/food/food.module';
+import { PlanModule } from '@/modules/plan/plan.module';
+import { RecipeModule } from './modules/recipe/recipe.module';
+import { ShoppingTaskModule } from './modules/shopping-task/shopping-task.module';
+import { ShoppingListModule } from './modules/shopping/shopping-list.module';
 // import { CategoryModule } from '@/modules/category/category.module';
 // import { UnitModule } from '@/modules/unit/unit.module';
 
@@ -18,6 +22,10 @@ import { FoodModule } from '@/modules/food/food.module';
     UsersModule,
     AuthModule,
     FoodModule,
+    PlanModule,
+    RecipeModule,
+    ShoppingTaskModule,
+    ShoppingListModule,
     // CategoryModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({
