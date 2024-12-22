@@ -25,11 +25,11 @@ export class FridgeItemController {
     @Body() createFridgeItemDto: CreateFridgeItemDto,
     @Req() request: any,
   ) {
-    const userId = request.user._id;
+    const userId = request.user.id;
     return this.fridgeItemService.createFridgeItem(createFridgeItemDto, userId);
   }
 
-  @Put(':id')
+  @Put()
   @UseGuards(JwtAuthGuard)
   async UpdateFridgeItemDto(
     @Param('id') id: string,

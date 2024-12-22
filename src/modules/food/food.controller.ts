@@ -11,11 +11,15 @@ import {
   Get,
   Query,
   ForbiddenException,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FoodService } from './food.service';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { UpdateFoodDto } from './dto/update-food.dto';
 import { JwtAuthGuard } from '@/auth/passport/jwt-auth.guard';
+import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { ObjectId } from 'mongoose';
 
 @Controller('food')
 export class FoodController {
@@ -31,32 +35,47 @@ export class FoodController {
     return this.foodService.findAllFood(query, +current, +pageSize);
   }
 
-  @Post()
-  @UseGuards(JwtAuthGuard)
-  async createFood(@Body() createFoodDto: CreateFoodDto, @Req() request: any) {
-    const userIdCreate = request.user._id;
-    return await this.foodService.createFood(createFoodDto, userIdCreate);
+  @Get(':id')
+  async getFoodById(@Param('id') id: ObjectId) {
+    return this.foodService.getFoodById(id);
   }
 
-  @Put()
+  @Post()
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  async createFood(
+    @Body() body: CreateFoodDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Req() request: any,
+  ) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    return this.foodService.createFood(body, request.user.id, file);
+  }
+
+  @Put(':id')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
   async updateFood(
     @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
     @Body() updateFoodDto: UpdateFoodDto,
     @Req() request: any,
   ) {
-    if (request.user._id !== updateFoodDto.userIdCreate) {
+    if (request.user.id !== updateFoodDto.userIdCreate) {
       throw new ForbiddenException(
         'You are not authorized to update this food',
       );
     }
-    return this.foodService.updateFood(updateFoodDto);
+    return this.foodService.updateFood(id, updateFoodDto, file);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   async removeFood(@Param('id') id: string, @Req() request: any) {
-    return this.foodService.removeFood(id, request.user._id);
+    return this.foodService.removeFood(id, request.user.id);
   }
 
   @Get('user/:userId')

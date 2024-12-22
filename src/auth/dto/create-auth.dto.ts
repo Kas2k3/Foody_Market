@@ -16,7 +16,7 @@ export class CreateAuthDto {
 
 export class CodeAuthDto {
   @IsNotEmpty({ message: 'Id cannot be blank' })
-  _id: string;
+  id: string;
 
   @IsNotEmpty({ message: 'Code cannot be blank' })
   code: string;

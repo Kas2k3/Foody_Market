@@ -22,7 +22,7 @@ export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private readonly mailerService: MailerService,
-  ) {}
+  ) { }
 
   isInfoExist = async (info: string) => {
     const user = await this.userModel.exists({
@@ -163,6 +163,19 @@ export class UsersService {
     return `This action returns a ${id} user`;
   }
 
+  async getUserById(id: ObjectId) {
+    const user = await this.userModel.findById(id).exec();
+
+    return {
+      resultMessage: {
+        en: 'The user information has gotten successfully.',
+        vn: 'Thông tin người dùng đã được lấy thành công.'
+      },
+      resultCode: '00089',
+      user: user,
+    };
+  }
+
   //search user by email or username
   async findByInfo(info: string): Promise<User | null> {
     return await this.userModel.findOne({
@@ -177,14 +190,14 @@ export class UsersService {
 
   //save refresh token
   async saveRefreshToken(userId: ObjectId, refreshToken: string) {
-    await this.userModel.updateOne({ _id: userId }, { refreshToken });
+    await this.userModel.updateOne({ id: userId }, { refreshToken });
   }
 
   //update
   async update(updateUserDto: UpdateUserDto) {
-    const { _id, email, name, username, type } = updateUserDto;
+    const { id, email, name, username, type } = updateUserDto;
     //check input
-    if (!email || !name || !_id || !username || !type) {
+    if (!email || !name || !id || !username || !type) {
       throw new BadRequestException({
         resultMessage: {
           en: 'Please provide all required fields!',
@@ -204,7 +217,7 @@ export class UsersService {
     }
 
     return await this.userModel.updateOne(
-      { _id: updateUserDto._id },
+      { id: updateUserDto.id },
       { ...updateUserDto },
     );
   }
@@ -215,7 +228,7 @@ export class UsersService {
     if (!user) {
       throw new BadRequestException('Người dùng không tồn tại');
     }
-    await this.userModel.deleteOne({ _id: id });
+    await this.userModel.deleteOne({ id: id });
     return {
       resultMessage: {
         en: 'This account was deleted successfully.',
@@ -312,7 +325,7 @@ export class UsersService {
         vn: 'Bạn đã đăng ký thành công.',
       },
       resultCode: '00035',
-      _id: user._id,
+      id: user.id,
       user,
       confirmToken: 'your_confirmation_token',
     };
@@ -321,7 +334,7 @@ export class UsersService {
   //activate
   async handleActive(data: CodeAuthDto) {
     const user = await this.userModel.findOne({
-      _id: data._id,
+      id: data.id,
       codeId: data.code,
     });
     if (!user) {
@@ -338,7 +351,7 @@ export class UsersService {
     const isBeforeCheck = dayjs().isBefore(user.codeExpired);
     if (isBeforeCheck) {
       await this.userModel.updateOne(
-        { _id: data._id },
+        { id: data.id },
         {
           isActivated: true,
         },

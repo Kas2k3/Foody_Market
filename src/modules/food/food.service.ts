@@ -2,24 +2,34 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { Food, FoodDocument } from './schemas/food.schema';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { UpdateFoodDto } from './dto/update-food.dto';
 import app from 'api-query-params';
+import { CloudinaryService } from '@/modules/cloudinary/food/food.service';
 
 @Injectable()
 export class FoodService {
   constructor(
     @InjectModel(Food.name) private readonly foodModel: Model<FoodDocument>,
+    private readonly cloudinaryService: CloudinaryService,
   ) { }
 
-  async createFood(createFoodDto: CreateFoodDto, userIdCreate: string) {
+  async createFood(
+    createFoodDto: CreateFoodDto,
+    userIdCreate: string,
+    file: Express.Multer.File,
+  ) {
+    const imageUrl = await this.cloudinaryService.uploadImage(file);
+
     const food = new this.foodModel({
       ...createFoodDto,
       userIdCreate,
+      imageUrl,
     });
 
     await food.save();
@@ -35,12 +45,24 @@ export class FoodService {
     };
   }
 
-  async updateFood(updateFoodDto: UpdateFoodDto) {
+  async updateFood(
+    id: string,
+    updateFoodDto: UpdateFoodDto,
+    file: Express.Multer.File,
+  ): Promise<any> {
+    const imageUrl = await this.cloudinaryService.uploadImage(file);
     const updatedFood = await this.foodModel.findByIdAndUpdate(
-      updateFoodDto.id,
-      { ...updateFoodDto },
+      id,
+      {
+        ...updateFoodDto,
+        imageUrl,
+      },
       { new: true },
     );
+
+    if (!updatedFood) {
+      throw new NotFoundException('Food not found or cannot be updated');
+    }
 
     return {
       resultMessage: {
@@ -103,6 +125,29 @@ export class FoodService {
       resultCode: '00188',
       food: results,
       totalPages,
+    };
+  }
+
+  async getFoodById(id: ObjectId) {
+    const food = await this.foodModel.findById(id).exec();
+
+    if (!food) {
+      throw new NotFoundException({
+        resultMessage: {
+          en: 'Food does not exist.',
+          vn: 'Thực phẩm không tồn tại.',
+        },
+        resultCode: '00208',
+      });
+    }
+
+    return {
+      resultMessage: {
+        en: 'Successfull retrieve all foods',
+        vn: 'Lấy thông tin thực phẩm thành công',
+      },
+      resultCode: '00188x',
+      food: food,
     };
   }
 

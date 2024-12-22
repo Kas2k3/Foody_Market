@@ -3,7 +3,7 @@ import { IsMongoId, IsNotEmpty } from 'class-validator';
 export class UpdateUserDto {
   @IsMongoId({ message: 'Invalid Id' })
   @IsNotEmpty({ message: 'Id cannot be blank' })
-  _id: string;
+  id: string;
 
   @IsNotEmpty({ message: 'Name cannot be blank' })
   name: string;

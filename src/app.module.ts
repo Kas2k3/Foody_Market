@@ -12,6 +12,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { FoodModule } from '@/modules/food/food.module';
 import { FridgeItemModule } from '@/modules/fridge/fridge.module';
 import { PlanModule } from '@/modules/plan/plan.module';
+import { MulterModule } from '@nestjs/platform-express';
 // import { CategoryModule } from '@/modules/category/category.module';
 // import { UnitModule } from '@/modules/unit/unit.module';
 
@@ -25,7 +26,11 @@ import { PlanModule } from '@/modules/plan/plan.module';
     // CategoryModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [ConfigModule,
+        MulterModule.register({
+          dest: './uploads',  // Đặt thư mục tạm thời cho Multer
+        }),
+      ],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
       }),
