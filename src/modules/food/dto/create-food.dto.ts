@@ -25,10 +25,6 @@ export class CreateFoodDto {
   category: CategoryEnum;
 
   @IsNotEmpty()
-  @IsNumberString()
-  quantity: number;
-
-  @IsNotEmpty()
   @IsEnum(UnitEnum, { message: 'Invalid unit value' })
   unit: UnitEnum;
 

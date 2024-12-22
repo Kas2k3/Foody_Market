@@ -97,4 +97,11 @@ export class AuthController {
       resultCode: '00048',
     };
   }
+
+  // @Post('logout')
+  // @UseGuards(JwtAuthGuard)
+  // async logout(@Req() req: any) {
+  //   const userId = req.user._id;
+  //   return this.authService.logout(userId);
+  // }
 }

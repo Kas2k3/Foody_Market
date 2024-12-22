@@ -15,7 +15,6 @@ import {
 import { FoodService } from './food.service';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { UpdateFoodDto } from './dto/update-food.dto';
-import mongoose from 'mongoose';
 import { JwtAuthGuard } from '@/auth/passport/jwt-auth.guard';
 
 @Controller('food')
@@ -55,10 +54,15 @@ export class FoodController {
   }
 
   @Delete(':id')
-  async removeFood(@Param('id') id: string) {
-    if (!mongoose.isValidObjectId(id)) {
-      throw new BadRequestException('Id không hợp lệ');
-    }
-    return this.foodService.removeFood(id);
+  @UseGuards(JwtAuthGuard)
+  async removeFood(@Param('id') id: string, @Req() request: any) {
+    return this.foodService.removeFood(id, request.user._id);
+  }
+
+  @Get('user/:userId')
+  @UseGuards(JwtAuthGuard)
+  async getFoodsByUserId(@Param('userId') userIdCreate: string) {
+    const response = await this.foodService.getFoodsByUserId(userIdCreate);
+    return response;
   }
 }

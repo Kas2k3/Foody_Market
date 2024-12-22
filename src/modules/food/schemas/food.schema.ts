@@ -37,9 +37,6 @@ export class Food {
   @Prop()
   type: string;
 
-  @Prop({ required: true })
-  quantity: number;
-
   @Prop({ required: true, enum: CategoryEnum })
   category: CategoryEnum;
 
