@@ -43,8 +43,8 @@ export class PlanService {
         name: plan.name,
         timestamp: plan.timestamp,
         status: plan.status,
-        FoodId: food,
-        UserId: plan.userId,
+        foodId: food,
+        userId: plan.userId,
         updatedAt: plan.updatedAt,
         createdAt: plan.createdAt,
       },
@@ -55,9 +55,7 @@ export class PlanService {
     // Simulated Food model and operation (adjust based on your actual implementation)
     const food = await this.foodModel.findOne({ name: foodName }); // Replace with actual Food model
     if (!food) {
-      const newFood = new this.foodModel({ name: foodName });
-      await newFood.save();
-      return newFood;
+      throw new BadRequestException('Food not found');
     }
     return food;
   }
@@ -95,8 +93,8 @@ export class PlanService {
         name: updatedPlan.name,
         timestamp: updatedPlan.timestamp,
         status: updatedPlan.status,
-        FoodId: food,
-        UserId: updatedPlan.userId,
+        foodId: food,
+        userId: updatedPlan.userId,
         updatedAt: updatedPlan.updatedAt,
         createdAt: updatedPlan.createdAt,
       },
