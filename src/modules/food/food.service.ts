@@ -152,6 +152,14 @@ export class FoodService {
     };
   }
 
+  async getFoodIdByName(foodName: string): Promise<string> {
+    const food = await this.foodModel.findOne({ name: foodName });
+    if (!food) {
+      throw new NotFoundException('Food with the given name not found');
+    }
+    return food.id.toString();
+  }
+
   async getFoodsByUserId(userIdCreate: string): Promise<any> {
     const foods = await this.foodModel.find({ userIdCreate }).exec();
 
