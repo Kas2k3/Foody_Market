@@ -29,7 +29,7 @@ export class FridgeItemController {
     return this.fridgeItemService.createFridgeItem(createFridgeItemDto, userId);
   }
 
-  @Put()
+  @Put(':id')
   @UseGuards(JwtAuthGuard)
   async UpdateFridgeItemDto(
     @Param('id') id: string,
