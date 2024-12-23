@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Food, FoodSchema } from './schemas/food.schema';
 import { FoodService } from './food.service';
 import { FoodController } from './food.controller';
-import { CloudinaryService } from '@/modules/cloudinary/food/food.service';
+import { FoodCloudinaryService } from '@/modules/cloudinary/food/food.cloudinary';
 
 @Module({
   imports: [
@@ -12,7 +12,7 @@ import { CloudinaryService } from '@/modules/cloudinary/food/food.service';
   ],
   controllers: [FoodController],
   // providers: [FoodService],
-  providers: [FoodService, CloudinaryService],
+  providers: [FoodService, FoodCloudinaryService],
   exports: [MongooseModule, FoodService],
 
 })

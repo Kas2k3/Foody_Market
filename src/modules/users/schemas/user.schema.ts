@@ -37,7 +37,7 @@ export class User {
   birthDate: Date | null;
 
   @Prop({ default: '' })
-  photoUrl: string;
+  avatar: string;
 
   @Prop()
   accountType: string;
