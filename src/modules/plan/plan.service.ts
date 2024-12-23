@@ -90,7 +90,16 @@ export class PlanService {
         vn: 'Cập nhật kế hoạch ăn uống thành công',
       },
       resultCode: '00344',
-      Plan: updatedPlan,
+      Plan: {
+        id: updatedPlan._id,
+        name: updatedPlan.name,
+        timestamp: updatedPlan.timestamp,
+        status: updatedPlan.status,
+        FoodId: food,
+        UserId: updatedPlan.userId,
+        updatedAt: updatedPlan.updatedAt,
+        createdAt: updatedPlan.createdAt,
+      },
     };
   }
 
