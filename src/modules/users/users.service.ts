@@ -13,6 +13,7 @@ import {
 } from '@/auth/dto/create-auth.dto';
 import dayjs from 'dayjs';
 import { MailerService } from '@nestjs-modules/mailer';
+import { UserCloudinaryService } from '../cloudinary/user/user.cloudinary';
 
 export function randomCode(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -22,6 +23,7 @@ export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     private readonly mailerService: MailerService,
+    private readonly cloudinaryService: UserCloudinaryService,
   ) { }
 
   isInfoExist = async (info: string) => {
@@ -34,7 +36,7 @@ export class UsersService {
   async findByUsername(username: string): Promise<User | null> {
     return this.userModel.findOne({ username });
   }
-  
+
   async create(createUserDto: CreateUserDto) {
     const {
       username,
@@ -197,10 +199,11 @@ export class UsersService {
   }
 
   //update
-  async update(updateUserDto: UpdateUserDto) {
+  async update(updateUserDto: UpdateUserDto, file?: Express.Multer.File) {
     const { id, email, name, username, type } = updateUserDto;
-    //check input
-    if (!email || !name || !id || !username || !type) {
+
+    // Kiểm tra dữ liệu đầu vào
+    if (!id || !email || !name || !username) {
       throw new BadRequestException({
         resultMessage: {
           en: 'Please provide all required fields!',
@@ -209,6 +212,7 @@ export class UsersService {
         resultCode: '00038',
       });
     }
+
     if (name.length < 4 || name.length > 30) {
       throw new BadRequestException({
         resultMessage: {
@@ -219,10 +223,28 @@ export class UsersService {
       });
     }
 
-    return await this.userModel.updateOne(
-      { id: updateUserDto.id },
-      { ...updateUserDto },
+    // Kiểm tra nếu có file ảnh được gửi lên thì upload lên Cloudinary
+    let avatarUrl: string | undefined;
+    if (file) {
+      try {
+        avatarUrl = await this.cloudinaryService.uploadImage(file);
+      } catch (error) {
+        throw new BadRequestException('Error uploading image');
+      }
+    }
+
+    // Cập nhật thông tin người dùng
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      id,
+      { ...updateUserDto, avatar: avatarUrl },
+      { new: true }, // Trả về bản cập nhật mới
     );
+
+    if (!updatedUser) {
+      throw new BadRequestException('User not found');
+    }
+
+    return updatedUser;
   }
 
   //delete account

@@ -11,13 +11,13 @@ import { Food, FoodDocument } from './schemas/food.schema';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { UpdateFoodDto } from './dto/update-food.dto';
 import app from 'api-query-params';
-import { CloudinaryService } from '@/modules/cloudinary/food/food.service';
+import { FoodCloudinaryService } from '@/modules/cloudinary/food/food.cloudinary';
 
 @Injectable()
 export class FoodService {
   constructor(
     @InjectModel(Food.name) private readonly foodModel: Model<FoodDocument>,
-    private readonly cloudinaryService: CloudinaryService,
+    private readonly cloudinaryService: FoodCloudinaryService,
   ) { }
 
   async createFood(
