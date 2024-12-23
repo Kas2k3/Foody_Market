@@ -16,6 +16,7 @@ import { ShoppingTaskModule } from './modules/shopping-task/shopping-task.module
 import { ShoppingListModule } from './modules/shopping/shopping-list.module';
 import { FridgeItemModule } from '@/modules/fridge/fridge.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { GroupModule } from '@/modules/group/group.module';
 // import { CategoryModule } from '@/modules/category/category.module';
 // import { UnitModule } from '@/modules/unit/unit.module';
 
@@ -29,6 +30,7 @@ import { MulterModule } from '@nestjs/platform-express';
     ShoppingTaskModule,
     ShoppingListModule,
     FridgeItemModule,
+    GroupModule,
     // CategoryModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({
