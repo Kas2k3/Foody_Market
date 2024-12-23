@@ -21,7 +21,7 @@ export class PlanService {
   // Create a Plan
   async createPlan(createPlanDto: CreatePlanDto, userId: string) {
     const food = await this.findOrCreateFood(createPlanDto.foodName);
-
+    console.log(food);
     const plan = new this.planModel({
       name: createPlanDto.name,
       timestamp: new Date(createPlanDto.timestamp),
@@ -43,7 +43,7 @@ export class PlanService {
         name: plan.name,
         timestamp: plan.timestamp,
         status: plan.status,
-        FoodId: food._id,
+        FoodId: food,
         UserId: plan.userId,
         updatedAt: plan.updatedAt,
         createdAt: plan.createdAt,
