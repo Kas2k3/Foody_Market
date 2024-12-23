@@ -24,7 +24,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly mailerService: MailerService,
     private readonly configService: ConfigService,
-  ) {}
+  ) { }
 
   @Public()
   @UseGuards(LocalAuthGuard)
@@ -38,12 +38,6 @@ export class AuthController {
   @Public()
   async refreshToken(@Body('refreshToken') refreshToken: string) {
     return this.authService.refreshToken(refreshToken);
-  }
-
-  // @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Request() req) {
-    return req.user;
   }
 
   @Post('register')
@@ -101,7 +95,7 @@ export class AuthController {
   // @Post('logout')
   // @UseGuards(JwtAuthGuard)
   // async logout(@Req() req: any) {
-  //   const userId = req.user._id;
+  //   const userId = req.user.id;
   //   return this.authService.logout(userId);
   // }
 }

@@ -14,6 +14,8 @@ import { PlanModule } from '@/modules/plan/plan.module';
 import { RecipeModule } from './modules/recipe/recipe.module';
 import { ShoppingTaskModule } from './modules/shopping-task/shopping-task.module';
 import { ShoppingListModule } from './modules/shopping/shopping-list.module';
+import { FridgeItemModule } from '@/modules/fridge/fridge.module';
+import { MulterModule } from '@nestjs/platform-express';
 // import { CategoryModule } from '@/modules/category/category.module';
 // import { UnitModule } from '@/modules/unit/unit.module';
 
@@ -26,10 +28,15 @@ import { ShoppingListModule } from './modules/shopping/shopping-list.module';
     RecipeModule,
     ShoppingTaskModule,
     ShoppingListModule,
+    FridgeItemModule,
     // CategoryModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [ConfigModule,
+        MulterModule.register({
+          dest: './uploads',  // Đặt thư mục tạm thời cho Multer
+        }),
+      ],
       useFactory: async (configService: ConfigService) => ({
         uri: configService.get<string>('MONGODB_URI'),
       }),
@@ -72,4 +79,4 @@ import { ShoppingListModule } from './modules/shopping/shopping-list.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }
