@@ -100,4 +100,17 @@ export class RecipeService {
       recipes,
     };
   }
+
+  async getAllRecipes(): Promise<any> {
+    const recipes = await this.recipeModel.find().populate('foodId');
+
+    return {
+      resultMessage: {
+        en: 'Get all recipes successful',
+        vn: 'Lấy tất cả các công thức thành công',
+      },
+      resultCode: '00380',
+      recipes,
+    };
+  }
 }

@@ -53,5 +53,11 @@ import {
       }
       return this.recipeService.getRecipesByFoodId(foodId);
     }
+
+
+    @Get('all')
+    async getAllRecipes() {
+      return this.recipeService.getAllRecipes();
+    }
   }
   
