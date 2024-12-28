@@ -39,7 +39,13 @@ export class FoodCloudinaryService {
 
       return result.secure_url;
     } catch (error) {
-      throw new BadRequestException('Image upload failed');
+      throw new BadRequestException({
+        resultMessage: {
+          en: 'Image upload failed.',
+          vn: 'Đăng tải ảnh thất bại.'
+        },
+        resultCode: '00158',
+      });
     }
   }
 }

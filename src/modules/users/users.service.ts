@@ -1,6 +1,11 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 import { hashPasswordHelper } from '@/helpers/util';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
@@ -14,6 +19,7 @@ import {
 import dayjs from 'dayjs';
 import { MailerService } from '@nestjs-modules/mailer';
 import { UserCloudinaryService } from '../cloudinary/user/user.cloudinary';
+import bcrypt from 'bcrypt';
 
 export function randomCode(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -174,7 +180,7 @@ export class UsersService {
     return {
       resultMessage: {
         en: 'The user information has gotten successfully.',
-        vn: 'Thông tin người dùng đã được lấy thành công.'
+        vn: 'Thông tin người dùng đã được lấy thành công.',
       },
       resultCode: '00089',
       user: user,
@@ -200,9 +206,8 @@ export class UsersService {
 
   //update
   async update(updateUserDto: UpdateUserDto, file?: Express.Multer.File) {
-    const { id, email, name, username, type } = updateUserDto;
+    const { id, email, name, username } = updateUserDto;
 
-    // Kiểm tra dữ liệu đầu vào
     if (!id || !email || !name || !username) {
       throw new BadRequestException({
         resultMessage: {
@@ -223,21 +228,25 @@ export class UsersService {
       });
     }
 
-    // Kiểm tra nếu có file ảnh được gửi lên thì upload lên Cloudinary
     let avatarUrl: string | undefined;
     if (file) {
       try {
         avatarUrl = await this.cloudinaryService.uploadImage(file);
       } catch (error) {
-        throw new BadRequestException('Error uploading image');
+        throw new BadRequestException({
+          resultMessage: {
+            en: 'Image upload failed.',
+            vn: 'Đăng tải ảnh thất bại.'
+          },
+          resultCode: '00158',
+        });
       }
     }
 
-    // Cập nhật thông tin người dùng
     const updatedUser = await this.userModel.findByIdAndUpdate(
       id,
       { ...updateUserDto, avatar: avatarUrl },
-      { new: true }, // Trả về bản cập nhật mới
+      { new: true },
     );
 
     if (!updatedUser) {
@@ -245,6 +254,42 @@ export class UsersService {
     }
 
     return updatedUser;
+  }
+
+  async changeUserPassword(
+    userId: string,
+    changePasswordDto: ChangePasswordDto,
+  ): Promise<any> {
+    const { oldPassword, newPassword } = changePasswordDto;
+
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const isPasswordMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isPasswordMatch) {
+      throw new BadRequestException({
+        resultMessage: {
+          en: 'Your old password does not match the password you entered, please enter the correct password.',
+          vn: 'Mật khẩu cũ của bạn không khớp với mật khẩu bạn nhập, vui lòng nhập mật khẩu đúng.',
+        },
+        resultCode: '00072',
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    user.password = hashedPassword;
+    await user.save();
+
+    return {
+      resultMessage: {
+        en: 'Your password was changed successfully.',
+        vn: 'Mật khẩu của bạn đã được thay đổi thành công.',
+      },
+      resultCode: '00076',
+    };
   }
 
   //delete account

@@ -62,7 +62,13 @@ export class FoodService {
     );
 
     if (!updatedFood) {
-      throw new NotFoundException('Food not found or cannot be updated');
+      throw new NotFoundException({
+        resultMessage: {
+          en: 'Food does not exist.',
+          vn: 'Thực phẩm không tồn tại.',
+        },
+        resultCode: '00194',
+      });
     }
 
     return {
@@ -78,7 +84,13 @@ export class FoodService {
   async removeFood(id: string, userId: string): Promise<any> {
     const food = await this.foodModel.findById(id);
     if (!food) {
-      throw new BadRequestException('Food not found');
+      throw new BadRequestException({
+        resultMessage: {
+          en: 'Food does not exist.',
+          vn: 'Thực phẩm không tồn tại.',
+        },
+        resultCode: '00194',
+      });
     }
 
     if (userId !== food.userIdCreate.toString()) {

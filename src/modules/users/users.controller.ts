@@ -25,6 +25,7 @@ import { Public } from '@/decorator/customize';
 import { RolesGuard } from '@/auth/passport/roles.guard';
 import { Roles } from '@/decorator/roles.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @Controller('user')
 export class UsersController {
@@ -71,6 +72,19 @@ export class UsersController {
     }
 
     return this.usersService.update(updateUserDto, file);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('change-password')
+  async changePassword(
+    @Req() req: any,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    const userId = req.user.id; // Lấy userId từ JWT token
+    return await this.usersService.changeUserPassword(
+      userId,
+      changePasswordDto,
+    );
   }
 
   @Delete(':id')
