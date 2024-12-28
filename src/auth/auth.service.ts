@@ -9,6 +9,8 @@ import {
   CreateAuthDto,
 } from './dto/create-auth.dto';
 import { ConfigService } from '@nestjs/config';
+import Redis from 'ioredis';
+import { InjectRedis } from '@nestjs-modules/ioredis';
 
 export interface IUser {
   email: string;
@@ -22,6 +24,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    @InjectRedis() private readonly redis: Redis,
   ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -34,7 +37,24 @@ export class AuthService {
   }
 
   async login(user: IUser) {
+    const accessTokenExpiration = process.env.JWT_ACCESS_TOKEN_EXPIRED;
+    const refreshTokenExpiration = process.env.REFRESH_JWT_TOKEN_EXPIRED;
+
     const payload = { email: user.email, sub: user.id, roles: user.roles };
+
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: accessTokenExpiration,
+    });
+
+    const refreshToken = this.generateRefreshToken(user);
+
+    await this.redis.set(
+      `refresh_token_${user.id}`,
+      refreshToken,
+      'EX',
+      parseInt(refreshTokenExpiration),
+    );
+
     return {
       resultMessage: {
         en: 'You logged in successfully.',
@@ -42,8 +62,19 @@ export class AuthService {
       },
       resultCode: '00047',
       user,
-      accessToken: this.jwtService.sign(payload),
-      refreshToken: this.generateRefreshToken(user),
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async logout(userId: string) {
+    await this.redis.del(`refresh_token_${userId}`);
+    return {
+      resultMessage: {
+        en: 'You logged out successfully.',
+        vn: 'Bạn đã đăng xuất thành công.',
+      },
+      resultCode: '00048',
     };
   }
 
@@ -52,12 +83,10 @@ export class AuthService {
   }
 
   private generateRefreshToken(user: IUser) {
-    const payload = { email: user.email, sub: user.id, roles: user.roles };
-    return this.jwtService.sign(payload, {
-      expiresIn: this.configService.get<string>(
-        'REFRESH_JWT_ACCESS_TOKEN_EXPIRED',
-      ),
-    });
+    return this.jwtService.sign(
+      { sub: user.id },
+      { expiresIn: process.env.REFRESH_JWT_TOKEN_EXPIRED },
+    );
   }
 
   async refreshToken(refreshToken: string) {
@@ -71,8 +100,12 @@ export class AuthService {
       });
     }
 
-    const payload = this.jwtService.verify(refreshToken);
-    if (!payload) {
+    let payload;
+    try {
+      payload = this.jwtService.verify(refreshToken, {
+        secret: this.configService.get<string>('REFRESH_JWT_SECRET'),
+      });
+    } catch (error) {
       throw new UnauthorizedException({
         resultMessage: {
           en: 'Cannot verify the token, please log in.',
@@ -82,20 +115,19 @@ export class AuthService {
       });
     }
 
-    const newAccessToken = this.jwtService.sign({
-      email: payload.email,
-      sub: payload.sub,
-    });
+    const newAccessToken = this.jwtService.sign(
+      { email: payload.email, sub: payload.sub },
+      {
+        secret: this.configService.get<string>('JWT_SECRET'),
+        expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRED'),
+      },
+    );
 
     const newRefreshToken = this.jwtService.sign(
+      { email: payload.email, sub: payload.sub },
       {
-        email: payload.email,
-        sub: payload.sub,
-      },
-      {
-        expiresIn: this.configService.get<string>(
-          'REFRESH_JWT_ACCESS_TOKEN_EXPIRED',
-        ),
+        secret: this.configService.get<string>('REFRESH_JWT_SECRET'),
+        expiresIn: this.configService.get<string>('REFRESH_JWT_TOKEN_EXPIRED'),
       },
     );
 

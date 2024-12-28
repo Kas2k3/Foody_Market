@@ -3,7 +3,9 @@ import {
   Controller,
   Get,
   Post,
+  Req,
   Request,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -35,7 +37,7 @@ export class AuthController {
   }
 
   @Post('refresh-token')
-  @Public()
+  @UseGuards(JwtAuthGuard)
   async refreshToken(@Body('refreshToken') refreshToken: string) {
     return this.authService.refreshToken(refreshToken);
   }
@@ -92,10 +94,9 @@ export class AuthController {
     };
   }
 
-  // @Post('logout')
-  // @UseGuards(JwtAuthGuard)
-  // async logout(@Req() req: any) {
-  //   const userId = req.user.id;
-  //   return this.authService.logout(userId);
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  async logout(@Request() req) {
+    return this.authService.logout(req.user.id);
+  }
 }
