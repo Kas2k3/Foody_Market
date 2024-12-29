@@ -46,4 +46,11 @@ export class GroupController {
   async getGroupMembers(@Param('groupId') groupId: string) {
     return this.groupService.getGroupMembers(groupId);
   }
+
+  // 5. Get groups by userId
+  @Get('users/:userId')
+  @UseGuards(JwtAuthGuard)
+  async getGroupsByUserId(@Param('userId') userId: string) {
+    return this.groupService.getGroupsByUserId(userId);
+  }
 }
