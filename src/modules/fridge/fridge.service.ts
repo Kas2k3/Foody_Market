@@ -142,4 +142,25 @@ export class FridgeItemService {
       },
     };
   }
+
+  async getItemsNearExpiration(): Promise<FridgeItem[]> {
+    const today = new Date();
+    const warningDate = new Date();
+    warningDate.setDate(today.getDate() + 3); // Sắp hết hạn trong 3 ngày
+
+    return this.fridgeItemModel
+      .find({
+        expired: { $gte: today, $lte: warningDate },
+      })
+      .exec();
+  }
+
+  async getExpiredItems(): Promise<FridgeItem[]> {
+    const today = new Date();
+    return this.fridgeItemModel
+      .find({
+        expired: { $lt: today },
+      })
+      .exec();
+  }
 }

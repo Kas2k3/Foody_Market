@@ -20,6 +20,8 @@ import { UpdateFoodDto } from './dto/update-food.dto';
 import { JwtAuthGuard } from '@/auth/passport/jwt-auth.guard';
 import { AnyFilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { ObjectId } from 'mongoose';
+import { validate } from 'class-validator';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('food')
 export class FoodController {
@@ -56,20 +58,24 @@ export class FoodController {
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file')) // 'file' có thể không được gửi
   async updateFood(
     @Param('id') id: string,
+    @Body() body: any,
     @UploadedFile() file: Express.Multer.File,
-    @Body() updateFoodDto: UpdateFoodDto,
-    @Req() request: any,
-  ) {
-    if (request.user.id !== updateFoodDto.userIdCreate) {
-      throw new ForbiddenException(
-        'You are not authorized to update this food',
+  ): Promise<any> {
+    // Chuyển body thành DTO và validate
+    const updateFoodDto = plainToInstance(UpdateFoodDto, body);
+
+    const errors = await validate(updateFoodDto);
+    if (errors.length > 0) {
+      throw new BadRequestException(
+        errors.map((err) => Object.values(err.constraints).join(', ')),
       );
     }
-    return this.foodService.updateFood(id, updateFoodDto, file);
+
+    // Gọi service để cập nhật
+    return await this.foodService.updateFood(id, updateFoodDto, file);
   }
 
   @Delete(':id')

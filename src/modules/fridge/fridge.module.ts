@@ -7,6 +7,7 @@ import {
 import { FridgeItemService } from '@/modules/fridge/fridge.service';
 import { FridgeItemController } from '@/modules/fridge/fridge.controller';
 import { FoodModule } from '@/modules/food/food.module';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { FoodModule } from '@/modules/food/food.module';
       { name: FridgeItem.name, schema: FridgeItemSchema },
     ]),
     FoodModule,
+    NotificationModule,
   ],
   controllers: [FridgeItemController],
   providers: [FridgeItemService],

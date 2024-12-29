@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from '@/app.controller';
 import { AppService } from '@/app.service';
 import { UsersModule } from '@/modules/users/users.module';
@@ -18,7 +18,8 @@ import { FridgeItemModule } from '@/modules/fridge/fridge.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { GroupModule } from '@/modules/group/group.module';
 import { RedisModule, RedisModuleOptions } from '@nestjs-modules/ioredis';
-// import { NotificationModule } from './modules/notification/notification.module';
+import { NotificationModule } from './modules/notification/notification.module';
+import { ScheduleModule } from '@nestjs/schedule';
 // import { CategoryModule } from '@/modules/category/category.module';
 // import { UnitModule } from '@/modules/unit/unit.module';
 
@@ -39,6 +40,8 @@ import { RedisModule, RedisModuleOptions } from '@nestjs-modules/ioredis';
       },
       inject: [ConfigService],
     }),
+    NotificationModule,
+    ScheduleModule.forRoot(),
     AuthModule,
     FoodModule,
     PlanModule,
@@ -47,7 +50,6 @@ import { RedisModule, RedisModuleOptions } from '@nestjs-modules/ioredis';
     ShoppingListModule,
     FridgeItemModule,
     GroupModule,
-    // NotificationModule,
     // CategoryModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({

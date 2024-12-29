@@ -49,16 +49,24 @@ export class FoodService {
   async updateFood(
     id: string,
     updateFoodDto: UpdateFoodDto,
-    file: Express.Multer.File,
+    file?: Express.Multer.File, // Tệp có thể không được gửi lên
   ): Promise<any> {
-    const imageUrl = await this.cloudinaryService.uploadImage(file);
+    let imageUrl: string | undefined;
+
+    // Chỉ upload ảnh mới nếu có file
+    if (file) {
+      imageUrl = await this.cloudinaryService.uploadImage(file);
+    }
+
+    // Cập nhật dữ liệu, bỏ qua imageUrl nếu không có tệp mới
+    const updateData = imageUrl
+      ? { ...updateFoodDto, imageUrl } // Nếu có ảnh mới, thêm imageUrl
+      : { ...updateFoodDto };         // Nếu không, chỉ cập nhật DTO
+
     const updatedFood = await this.foodModel.findByIdAndUpdate(
       id,
-      {
-        ...updateFoodDto,
-        imageUrl,
-      },
-      { new: true },
+      updateData,
+      { new: true }, // Trả về đối tượng đã được cập nhật
     );
 
     if (!updatedFood) {
