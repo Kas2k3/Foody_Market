@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from '@/app.controller';
 import { AppService } from '@/app.service';
 import { UsersModule } from '@/modules/users/users.module';
@@ -17,12 +17,28 @@ import { ShoppingListModule } from './modules/shopping/shopping-list.module';
 import { FridgeItemModule } from '@/modules/fridge/fridge.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { GroupModule } from '@/modules/group/group.module';
+import { RedisModule, RedisModuleOptions } from '@nestjs-modules/ioredis';
+// import { NotificationModule } from './modules/notification/notification.module';
 // import { CategoryModule } from '@/modules/category/category.module';
 // import { UnitModule } from '@/modules/unit/unit.module';
 
 @Module({
   imports: [
     UsersModule,
+    RedisModule.forRootAsync({
+      useFactory: async (configService: ConfigService) => {
+        const redisHost = configService.get<string>('REDIS_HOST');
+        const redisPort = configService.get<number>('REDIS_PORT');
+        return {
+          type: 'single',
+          options: {
+            host: redisHost,
+            port: redisPort,
+          },
+        } as RedisModuleOptions;
+      },
+      inject: [ConfigService],
+    }),
     AuthModule,
     FoodModule,
     PlanModule,
@@ -31,12 +47,14 @@ import { GroupModule } from '@/modules/group/group.module';
     ShoppingListModule,
     FridgeItemModule,
     GroupModule,
+    // NotificationModule,
     // CategoryModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({
-      imports: [ConfigModule,
+      imports: [
+        ConfigModule,
         MulterModule.register({
-          dest: './uploads',  // Đặt thư mục tạm thời cho Multer
+          dest: './uploads',
         }),
       ],
       useFactory: async (configService: ConfigService) => ({
@@ -44,6 +62,7 @@ import { GroupModule } from '@/modules/group/group.module';
       }),
       inject: [ConfigService],
     }),
+    ConfigModule.forRoot({ isGlobal: true }),
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
