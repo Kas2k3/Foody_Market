@@ -14,6 +14,10 @@ export class ShoppingTask {
 
   @Prop({ required: true })
   quantity: string;
+
+  @Prop({ default: false }) // false: chưa hoàn thành, true: hoàn thành
+  status: boolean;
+
 }
 
 export const ShoppingTaskSchema = SchemaFactory.createForClass(ShoppingTask);

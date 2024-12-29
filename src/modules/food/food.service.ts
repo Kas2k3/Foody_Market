@@ -167,7 +167,13 @@ export class FoodService {
   async getFoodIdByName(foodName: string): Promise<string> {
     const food = await this.foodModel.findOne({ name: foodName });
     if (!food) {
-      throw new NotFoundException('Food with the given name not found');
+      throw new NotFoundException({
+        resultMessage: {
+          en: 'The food with the provided name does not exist.',
+          vn: 'Thực phẩm với tên đã cung cấp không tồn tại.',
+        },
+        resultCode: '00167',
+      });
     }
     return food.id.toString();
   }

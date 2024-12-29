@@ -52,7 +52,13 @@ export class ShoppingListService {
     );
 
     if (!updatedShoppingList) {
-      throw new NotFoundException(`Shopping list with ID ${listId} not found.`);
+      throw new NotFoundException({
+        resultMessage: {
+          en: 'Shopping list not found.',
+          vn: 'Không tìm thấy danh sách mua sắm.',
+        },
+        resultCode: '00260',
+      });
     }
 
     return {
@@ -70,7 +76,13 @@ export class ShoppingListService {
     const result = await this.shoppingListModel.findByIdAndDelete(listId);
 
     if (!result) {
-      throw new NotFoundException(`Shopping list with ID ${listId} not found.`);
+      throw new NotFoundException({
+        resultMessage: {
+          en: 'Shopping list not found.',
+          vn: 'Không tìm thấy danh sách mua sắm.',
+        },
+        resultCode: '00272',
+      });
     }
 
     return { 

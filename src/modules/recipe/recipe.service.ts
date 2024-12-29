@@ -45,7 +45,13 @@ export class RecipeService {
 
     const recipe = await this.recipeModel.findById(recipeId);
     if (!recipe) {
-      throw new NotFoundException('Recipe not found.');
+      throw new NotFoundException({
+        resultMessage: {
+          en: 'No recipe found with the provided ID.',
+          vn: 'Không tìm thấy công thức với ID đã cung cấp.',
+        },
+        resultCode: '00365',
+      });
     }
 
     // Update fields
@@ -75,7 +81,13 @@ export class RecipeService {
   async removeRecipe(recipeId: string): Promise<any> {
     const deleted = await this.recipeModel.findByIdAndDelete(recipeId);
     if (!deleted) {
-      throw new NotFoundException('Recipe not found.');
+      throw new NotFoundException({
+        resultMessage: {
+          en: 'No recipe found with the provided ID.',
+          vn: 'Không tìm thấy công thức với ID đã cung cấp.',
+        },
+        resultCode: '00373',
+      });
     }
 
     return {

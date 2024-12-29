@@ -51,7 +51,6 @@ export class ShoppingTaskService {
       const formattedTasks = tasks.map((task) => {
         const shoppingList = task.listId as ShoppingList; // Ép kiểu ShoppingList
         const user = shoppingList?.userId as any;
-        console.log(task);
         return task;
       });
 
@@ -66,10 +65,65 @@ export class ShoppingTaskService {
     };
   }
 
+  async getTasksByUserId(userId: string) {
+    const tasks = await this.shoppingTaskModel
+      .find()
+      .populate({
+        path: 'listId',
+        model: 'ShoppingList',
+        match: { userId }, // Chỉ lấy các task thuộc về userId
+        populate: {
+          path: 'userId',
+          model: 'User',
+          select: 'username',
+        },
+      })
+      .exec();
+  
+    const filteredTasks = tasks.filter((task) => task.listId !== null); // Loại bỏ task không thuộc userId
+  
+    return {
+      resultMessage: {
+        en: 'Tasks retrieved successfully',
+        vn: 'Lấy nhiệm vụ thành công',
+      },
+      resultCode: '00295',
+      tasks: filteredTasks,
+    };
+  }
+
+  async updateTaskStatus(taskId: string, status: boolean) {
+    const task = await this.shoppingTaskModel.findById(taskId);
+    if (!task) throw new NotFoundException({
+      resultMessage: {
+        en: 'No task found with the provided ID.',
+        vn: 'Không tìm thấy nhiệm vụ với ID đã cung cấp.',
+      },
+      resultCode: '00306',
+    });
+  
+    task.status = status;
+    await task.save();
+  
+    return {
+      resultMessage: {
+        en: 'Task status updated successfully',
+        vn: 'Cập nhật trạng thái nhiệm vụ thành công',
+      },
+      resultCode: '00315',
+    };
+  }  
+
   // Delete task
   async deleteTask(taskId: string) {
     const deletedTask = await this.shoppingTaskModel.findByIdAndDelete(taskId);
-    if (!deletedTask) throw new NotFoundException('Task not found');
+    if (!deletedTask) throw new NotFoundException({
+      resultMessage: {
+        en: 'No task found with the provided ID.',
+        vn: 'Không tìm thấy nhiệm vụ với ID đã cung cấp.',
+      },
+      resultCode: '00296',
+    });
 
     return {
       resultMessage: {
@@ -84,7 +138,13 @@ export class ShoppingTaskService {
   async updateTask(updateTaskDto: UpdateTaskDto) {
     const { taskId, newFoodName } = updateTaskDto;
     const task = await this.shoppingTaskModel.findById(taskId);
-    if (!task) throw new NotFoundException('Task not found');
+    if (!task) throw new NotFoundException({
+      resultMessage: {
+        en: 'No task found with the provided ID.',
+        vn: 'Không tìm thấy nhiệm vụ với ID đã cung cấp.',
+      },
+      resultCode: '00306',
+    });
 
     task.foodName = newFoodName;
     await task.save();

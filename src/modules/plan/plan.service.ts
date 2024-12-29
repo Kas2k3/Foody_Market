@@ -55,7 +55,13 @@ export class PlanService {
     // Simulated Food model and operation (adjust based on your actual implementation)
     const food = await this.foodModel.findOne({ name: foodName }); // Replace with actual Food model
     if (!food) {
-      throw new BadRequestException('Food not found');
+      throw new BadRequestException({
+        resultMessage: {
+          en: 'Food does not exist.',
+          vn: 'Thực phẩm không tồn tại.',
+        },
+        resultCode: '00208',
+      });
     }
     return food;
   }
@@ -79,7 +85,13 @@ export class PlanService {
     );
 
     if (!updatedPlan) {
-      throw new NotFoundException('Plan plan not found');
+      throw new NotFoundException({
+        resultMessage: {
+          en: 'No plan found with the provided ID.',
+          vn: 'Không tìm thấy kế hoạch với ID đã cung cấp.',
+        },
+        resultCode: '00337',
+      });
     }
 
     return {
@@ -122,7 +134,13 @@ export class PlanService {
     // Validate the date
     const parsedDate = new Date(date);
     if (isNaN(parsedDate.getTime())) {
-      throw new BadRequestException('Invalid date format. Use MM/DD/YYYY.');
+      throw new BadRequestException({
+        resultMessage: {
+          en: 'Invalid date format.',
+          vn: 'Định dạng ngày không hợp lệ.',
+        },
+        resultCode: '00242',
+      });
     }
 
     // Find plans matching the given date (ignoring time)
