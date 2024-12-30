@@ -404,7 +404,7 @@ export class UsersService {
   //activate
   async handleActive(data: CodeAuthDto) {
     const user = await this.userModel.findOne({
-      id: data.id,
+      _id: data.id,
       codeId: data.code,
     });
     if (!user) {
