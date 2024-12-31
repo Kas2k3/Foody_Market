@@ -41,7 +41,7 @@ export class ShoppingTaskService {
         path: 'listId',
         model: 'ShoppingList',
         populate: {
-          path: 'userId',
+          path: 'userId assignedToUserId',
           model: 'User',
           select: 'username',
         }, // Chỉ lấy các trường cần thiết
@@ -71,12 +71,17 @@ export class ShoppingTaskService {
       .populate({
         path: 'listId',
         model: 'ShoppingList',
-        match: { userId }, // Chỉ lấy các task thuộc về userId
+        match: { 
+          $or: [
+            { assignedToUserId: userId }, 
+            { userId }
+          ]
+        },
         populate: {
-          path: 'userId',
+          path: 'userId assignedToUserId',
           model: 'User',
           select: 'username',
-        },
+        }
       })
       .exec();
   
