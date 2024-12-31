@@ -13,5 +13,10 @@
 #### Techstack
 
 - FE: Flutter (Dart), ReactJS (Admin role)
-- BE: NestJS, MongoDB
+- BE: NestJS, MongoDB, Cloudinary, Redis,Websocket
 - Design: Figma
+
+#### Back-end install
+
+- Step 1: Open terminal inside src and run: npm install
+- Step 2: Continue run: npm run dev
