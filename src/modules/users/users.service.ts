@@ -421,7 +421,7 @@ export class UsersService {
     const isBeforeCheck = dayjs().isBefore(user.codeExpired);
     if (isBeforeCheck) {
       await this.userModel.updateOne(
-        { id: data.id },
+        { _id: data.id },
         {
           isActivated: true,
         },
