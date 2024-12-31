@@ -1,14 +1,17 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ShoppingList, ShoppingListDocument } from './schemas/shopping.schema';
 import { CreateShoppingListDto } from './dto/create-shopping-list.dto';
 import { UpdateShoppingListDto } from './dto/update-shopping-list.dto';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class ShoppingListService {
   constructor(
-    @InjectModel(ShoppingList.name) private shoppingListModel: Model<ShoppingListDocument>,
+    @InjectModel(ShoppingList.name)
+    private shoppingListModel: Model<ShoppingListDocument>,
+    private readonly userService: UsersService,
   ) {}
 
   // 1. Create a new shopping list
@@ -40,12 +43,29 @@ export class ShoppingListService {
   async updateShoppingList(updateDto: UpdateShoppingListDto) {
     const { listId, newName, newNote, newAssignToUsername, newDate } = updateDto;
 
+    let newAssignToUserId = null;
+
+    // Tìm userId từ username nếu newAssignToUsername tồn tại
+    if (newAssignToUsername) {
+      const user = await this.userService.findByUsername(newAssignToUsername);
+      if (!user) {
+        throw new NotFoundException({
+          resultMessage: {
+            en: 'Assigned user not found.',
+            vn: 'Không tìm thấy người dùng được chỉ định.',
+          },
+          resultCode: '00261',
+        });
+      }
+      newAssignToUserId = user.id; // Lấy userId
+    }
+
     const updatedShoppingList = await this.shoppingListModel.findByIdAndUpdate(
       listId,
       {
         ...(newName && { name: newName }),
         ...(newNote && { note: newNote }),
-        ...(newAssignToUsername && { assignedToUserId: newAssignToUsername }),
+        ...(newAssignToUserId && { assignedToUserId: newAssignToUserId }),
         ...(newDate && { date: new Date(newDate) }),
       },
       { new: true },
@@ -70,6 +90,7 @@ export class ShoppingListService {
       newShoppingList: updatedShoppingList,
     };
   }
+
 
   // 3. Delete a shopping list
   async deleteShoppingList(listId: string) {
